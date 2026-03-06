@@ -101,8 +101,8 @@
   .news-count { font-size:11px; color:var(--text3); font-family:var(--mono); }
 
   a.news-row {
-    display:flex; flex-direction:row; gap:14px;
-    padding:14px 16px;
+    display:flex; flex-direction:row; gap:18px;
+    padding:20px 20px;
     border-bottom:1px solid var(--border-2);
     text-decoration:none; color:inherit; transition:background .1s;
     align-items:flex-start;
@@ -111,15 +111,15 @@
   a.news-row:hover { background:#fafafa; }
   .news-row-body { flex:1; min-width:0; }
   .news-img {
-    flex:0 0 96px; width:96px; height:66px;
-    object-fit:cover; border-radius:4px;
-    background:var(--border); order:2;
+    flex:0 0 140px; width:140px; height:96px;
+    object-fit:cover; border-radius:5px;
+    background:var(--border); order:0;
+    flex-shrink:0;
   }
-  a.news-row:not(.has-img) .news-row-body { width:100%; }
-  .news-row-headline { font-size:14px; font-weight:600; color:var(--text); line-height:1.4; }
-  .news-row-headline.lead { font-size:16px; font-weight:700; line-height:1.35; margin-bottom:5px; }
-  .news-row-desc { font-size:12px; font-weight:400; color:var(--text2); line-height:1.55; margin-top:4px; }
-  .news-row-meta { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text3); margin-top:5px; }
+  .news-row-headline { font-size:15px; font-weight:600; color:var(--text); line-height:1.4; }
+  .news-row-headline.lead { font-size:18px; font-weight:700; line-height:1.35; margin-bottom:6px; }
+  .news-row-desc { font-size:13px; font-weight:400; color:var(--text2); line-height:1.6; margin-top:6px; }
+  .news-row-meta { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text3); margin-top:8px; }
   .dot-sep { color:var(--border-2); }
 
   /* ── SIDEBAR ── */
@@ -150,29 +150,6 @@
   }
   .filter-btn:hover { border-color:var(--text2); color:var(--text); }
   .filter-btn.active { background:var(--text); border-color:var(--text); color:#fff; }
-
-  /* ── SECTOR GRID ── */
-  .sector-grid { display:grid; grid-template-columns:1fr 340px; gap:20px; align-items:start; }
-
-  a.deal-row {
-    display:block; padding:11px 16px;
-    border-bottom:1px solid var(--border-2);
-    text-decoration:none; color:inherit; transition:background .1s;
-  }
-  a.deal-row:last-of-type { border-bottom:none; }
-  a.deal-row:hover { background:#fafafa; }
-  .deal-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px; line-height:1.4; }
-  .deal-desc { font-size:11px; color:var(--text2); line-height:1.5; margin-bottom:5px; }
-  .deal-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-  .deal-size { font-family:var(--mono); font-size:12px; font-weight:500; }
-  .deal-type { font-size:11px; color:var(--text3); }
-  .deal-src  { font-size:10px; color:var(--text3); font-family:var(--mono); margin-left:2px; }
-  .pill { font-size:10px; font-weight:600; letter-spacing:.4px; padding:2px 8px; border-radius:20px; margin-left:auto; }
-  .p-green  { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
-  .p-blue   { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
-  .p-orange { background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; }
-  .p-gray   { background:var(--tag-bg); color:var(--text3); border:1px solid var(--border); }
-  .demo-note { font-size:10px; color:var(--text3); font-family:var(--mono); padding:10px 16px; }
 
   /* ── MARITIME ── */
   .source-pill {
@@ -332,20 +309,12 @@
     <button class="filter-btn" onclick="selectSector('infrastructure',this)">Infrastructure</button>
     <button class="filter-btn" onclick="selectSector('rates',this)">Fixed Income</button>
   </div>
-  <div class="sector-grid">
-    <div class="news-card">
-      <div class="news-card-header">
-        <span class="news-card-title" id="sector-title">Private Debt — Latest</span>
-        <span class="news-count" id="sector-count">—</span>
-      </div>
-      <div id="sector-news"><div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading...</div></div>
+  <div class="news-card">
+    <div class="news-card-header">
+      <span class="news-card-title" id="sector-title">Private Debt — Latest</span>
+      <span class="news-count" id="sector-count">—</span>
     </div>
-    <div class="news-card">
-      <div class="news-card-header">
-        <span class="news-card-title" id="deal-title">Deal Flow — Private Debt</span>
-      </div>
-      <div id="deal-tracker"><div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading...</div></div>
-    </div>
+    <div id="sector-news"><div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading...</div></div>
   </div>
 </div>
 
@@ -458,8 +427,8 @@ function renderNews(articles, containerId, firstLead) {
     const lead  = firstLead && i === 0;
     const desc  = (a.description || '').replace(/<[^>]*>/g,'').trim();
     const img   = a.urlToImage || a.image || '';
-    const short = desc.substring(0, lead ? 220 : 140);
-    const more  = desc.length > (lead ? 220 : 140) ? '…' : '';
+    const short = desc.substring(0, lead ? 300 : 200);
+    const more  = desc.length > (lead ? 300 : 200) ? '…' : '';
     return `<a class="news-row${img ? ' has-img' : ''}" href="${url}" target="_blank" rel="noopener noreferrer">
       ${img ? `<img class="news-img" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
       <div class="news-row-body">
@@ -578,52 +547,17 @@ function selectSector(sector, btn) {
   document.querySelectorAll('#tab-sector .filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   $set('sector-title', btn.textContent + ' — Latest');
-  $set('deal-title',   'Deal Flow — ' + btn.textContent);
   fetchSectorNews(sector);
 }
 
 async function fetchSectorNews(sector) {
-  document.getElementById('sector-news').innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading...</div>';
-  document.getElementById('deal-tracker').innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading deals...</div>';
-
-  const [news, deals] = await Promise.all([
-    api('sector_news', { sector }),
-    api('deal_flow',   { sector }),
-  ]);
-
-  if (news?.articles?.length) {
-    renderNews(news.articles, 'sector-news', false);
-    $set('sector-count', news.articles.length + ' articles');
+  document.getElementById('sector-news').innerHTML = '<div style="padding:20px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading...</div>';
+  const d = await api('sector_news', { sector });
+  if (d?.articles?.length) {
+    renderNews(d.articles, 'sector-news', true);
+    $set('sector-count', d.articles.length + ' articles');
   } else sectorMock(sector);
-
-  if (deals?.deals?.length) renderDealsLive(deals.deals);
-  else renderDealsEmpty();
 }
-
-// ── Deal flow live ────────────────────────────────────────
-const PILL = { Priced:'p-green','Final Close':'p-green',Announced:'p-blue',Raising:'p-orange',Rumoured:'p-gray' };
-
-function renderDealsLive(deals) {
-  const el = document.getElementById('deal-tracker');
-  el.innerHTML = deals.map(d => {
-    const size   = d.size && d.size !== '—' ? `<span class="deal-size">${d.size}</span>` : '';
-    const type   = d.type ? `<span class="deal-type">${d.type}</span>` : '';
-    const status = d.status ? `<span class="pill ${PILL[d.status]||'p-gray'}">${d.status}</span>` : '';
-    const src    = d.source ? `<span class="deal-src">${d.source}</span>` : '';
-    const desc   = d.description ? `<div class="deal-desc">${d.description.substring(0,120)}…</div>` : '';
-    return `<a class="deal-row" href="${d.url||'#'}" target="_blank" rel="noopener noreferrer">
-      <div class="deal-name">${d.name}</div>
-      ${desc}
-      <div class="deal-meta">${size}${type}${src}${status}</div>
-    </a>`;
-  }).join('') + `<div class="demo-note">Live · Reuters M&A · PE News · GlobalCapital · Infrastructure Investor</div>`;
-}
-
-function renderDealsEmpty() {
-  document.getElementById('deal-tracker').innerHTML =
-    '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Aucun deal trouvé pour ce secteur.</div>';
-}
-
 
 
 function sectorMock(sector) {
@@ -688,8 +622,8 @@ function renderMaritime() {
     const lead  = i === 0;
     const desc  = (a.description || '').replace(/<[^>]*>/g,'').trim();
     const img   = a.urlToImage || a.image || '';
-    const short = desc.substring(0, lead ? 220 : 140);
-    const more  = desc.length > (lead ? 220 : 140) ? '…' : '';
+    const short = desc.substring(0, lead ? 300 : 200);
+    const more  = desc.length > (lead ? 300 : 200) ? '…' : '';
     const cat   = a.category && a.category !== 'general' ? a.category : '';
     const tag   = cat ? `<span class="cat-tag cat-${cat}">${CAT_LABELS[cat]||cat}</span>` : '';
     return `<a class="news-row${img?' has-img':''}" href="${a.url||'#'}" target="_blank" rel="noopener noreferrer">
