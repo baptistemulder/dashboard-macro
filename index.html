@@ -3,206 +3,235 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Market Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<title>Magellan · Market Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg:        #f5f6f8;
-    --white:     #ffffff;
-    --border:    #e4e6ea;
-    --border-2:  #eff0f2;
-    --text:      #111318;
-    --text2:     #5a5e6b;
-    --text3:     #9ba0ad;
-    --green:     #16a34a;
-    --red:       #dc2626;
-    --accent-bg: #f0fdf4;
-    --accent-bd: #bbf7d0;
-    --tag-bg:    #f1f2f5;
-    --font:      'Inter', system-ui, sans-serif;
-    --mono:      'IBM Plex Mono', monospace;
-    --radius:    6px;
-    --shadow:    0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:var(--font); font-size:14px; line-height:1.5; }
+:root {
+  --bg:       #f8f8f6;
+  --surface:  #ffffff;
+  --border:   #e8e8e4;
+  --border-s: #f0f0ec;
+  --text:     #0d0d0b;
+  --text2:    #52524e;
+  --text3:    #a8a8a0;
+  --green:    #1a7a3c;
+  --green-bg: #f0faf3;
+  --red:      #c0392b;
+  --red-bg:   #fef5f4;
+  --accent:   #1a1a18;
+  --mono:     'IBM Plex Mono', monospace;
+  --sans:     'Inter', system-ui, sans-serif;
+  --r:        4px;
+  --r2:       8px;
+  --shadow:   0 1px 2px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.04);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:14px; }
+body { background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.5; -webkit-font-smoothing:antialiased; }
 
-  /* ── TOPBAR ── */
-  .topbar {
-    background:var(--white); border-bottom:1px solid var(--border);
-    padding:0 24px; height:52px;
-    display:flex; align-items:center; justify-content:space-between;
-    position:sticky; top:0; z-index:200;
-  }
-  .topbar-left { display:flex; align-items:center; gap:16px; }
-  .topbar-title { font-size:15px; font-weight:600; letter-spacing:-.2px; }
-  .badge {
-    display:inline-flex; align-items:center; gap:5px;
-    font-size:11px; font-weight:500; padding:2px 8px; border-radius:20px;
-    background:var(--accent-bg); color:var(--green); border:1px solid var(--accent-bd);
-  }
-  .badge-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:blink 2.5s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-  .topbar-right { display:flex; align-items:center; gap:10px; }
-  .btn {
-    display:inline-flex; align-items:center; gap:6px;
-    font-size:12px; font-weight:500;
-    padding:5px 12px; border-radius:var(--radius);
-    border:1px solid var(--border); background:var(--white);
-    color:var(--text2); cursor:pointer; transition:all .12s;
-  }
-  .btn:hover { background:var(--bg); color:var(--text); }
-  .clock { font-family:var(--mono); font-size:12px; color:var(--text3); }
+/* ═══ TOPBAR ═══ */
+.topbar {
+  background:var(--accent); color:#fff;
+  height:48px; padding:0 28px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:300;
+}
+.topbar-brand { display:flex; align-items:center; gap:14px; }
+.topbar-logo  { font-size:13px; font-weight:600; letter-spacing:.04em; color:#fff; opacity:.95; }
+.topbar-sep   { width:1px; height:16px; background:rgba(255,255,255,.15); }
+.topbar-sub   { font-size:11px; color:rgba(255,255,255,.45); letter-spacing:.03em; font-weight:400; }
+.live-pill {
+  display:flex; align-items:center; gap:5px;
+  font-size:10px; font-weight:500; letter-spacing:.04em;
+  color:rgba(255,255,255,.55); font-family:var(--mono);
+}
+.live-dot { width:5px; height:5px; border-radius:50%; background:#4ade80; animation:pulse 2.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+.topbar-right { display:flex; align-items:center; gap:16px; }
+.t-clock { font-family:var(--mono); font-size:11px; color:rgba(255,255,255,.4); }
+.t-btn {
+  font-size:11px; font-weight:500; letter-spacing:.02em;
+  padding:4px 12px; border-radius:var(--r);
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.07); color:rgba(255,255,255,.7);
+  cursor:pointer; transition:all .15s;
+}
+.t-btn:hover { background:rgba(255,255,255,.12); color:#fff; }
 
-  /* ── TABS ── */
-  .tabs-bar {
-    background:var(--white); border-bottom:1px solid var(--border);
-    padding:0 24px; display:flex; align-items:flex-end;
-  }
-  .tab {
-    font-size:13px; font-weight:500; color:var(--text2);
-    padding:12px 16px 11px; border:none; background:none; cursor:pointer;
-    border-bottom:2px solid transparent; transition:all .12s; line-height:1;
-  }
-  .tab:hover { color:var(--text); }
-  .tab.active { color:var(--text); border-bottom-color:var(--text); }
+/* ═══ TABS ═══ */
+.tabs-bar {
+  background:var(--surface); border-bottom:1px solid var(--border);
+  padding:0 28px; display:flex; align-items:flex-end; gap:2px;
+}
+.tab {
+  font-size:12px; font-weight:500; letter-spacing:.01em;
+  color:var(--text3); padding:13px 14px 12px;
+  border:none; background:none; cursor:pointer;
+  border-bottom:2px solid transparent; transition:all .15s; line-height:1;
+}
+.tab:hover { color:var(--text2); }
+.tab.active { color:var(--text); border-bottom-color:var(--text); }
 
-  /* ── MAIN ── */
-  .main { padding:20px 24px; max-width:1480px; margin:0 auto; }
-  .tab-content { display:none; }
-  .tab-content.active { display:block; }
+/* ═══ LAYOUT ═══ */
+.main { padding:24px 28px; max-width:1600px; margin:0 auto; }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
 
-  /* ── BANNER ── */
-  .banner {
-    background:#fffbeb; border:1px solid #fcd34d; border-radius:var(--radius);
-    padding:8px 14px; font-size:12px; color:#92400e;
-    margin-bottom:16px; display:flex; align-items:center; gap:8px;
-  }
-  .banner code { background:rgba(0,0,0,.06); padding:1px 5px; border-radius:3px; font-family:var(--mono); font-size:11px; }
+/* ═══ CONFIG BANNER ═══ */
+.banner {
+  background:#fffbeb; border:1px solid #f59e0b;
+  border-radius:var(--r); padding:8px 14px;
+  font-size:11px; color:#78350f; margin-bottom:20px;
+  display:flex; align-items:center; gap:8px;
+}
+.banner code { background:rgba(0,0,0,.07); padding:1px 5px; border-radius:3px; font-family:var(--mono); }
 
-  /* ── MACRO GRID ── */
-  .macro-grid {
-    display:flex; flex-direction:row; gap:20px;
-    align-items:flex-start; width:100%;
-  }
-  .macro-grid .news-card { flex:1 1 0%; min-width:0; }
-  .macro-grid .sidebar   { flex:0 0 272px; width:272px; position:sticky; top:88px; align-self:flex-start; }
+/* ═══ MACRO GRID ═══ */
+.macro-grid { display:flex; gap:24px; align-items:flex-start; }
+.macro-grid .feed-col { flex:1 1 0%; min-width:0; }
+.macro-grid .data-col { flex:0 0 260px; width:260px; position:sticky; top:72px; }
 
-  /* ── NEWS CARD ── */
-  .news-card {
-    background:var(--white); border:1px solid var(--border);
-    border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
-  }
-  .news-card-header {
-    padding:10px 16px; border-bottom:1px solid var(--border-2);
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .news-card-title { font-size:11px; font-weight:600; letter-spacing:.6px; text-transform:uppercase; color:var(--text3); }
-  .news-count { font-size:11px; color:var(--text3); font-family:var(--mono); }
+/* ═══ CARD ═══ */
+.card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r2); overflow:hidden; box-shadow:var(--shadow);
+}
+.card-hdr {
+  padding:11px 18px; border-bottom:1px solid var(--border-s);
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--surface);
+}
+.card-label { font-size:10px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--text3); }
+.card-meta  { font-size:10px; color:var(--text3); font-family:var(--mono); }
 
-  a.news-row {
-    display:flex; flex-direction:row; gap:20px;
-    padding:22px 20px;
-    border-bottom:1px solid var(--border-2);
-    text-decoration:none; color:inherit; transition:background .1s;
-    align-items:flex-start;
-  }
-  a.news-row:last-child { border-bottom:none; }
-  a.news-row:hover { background:#fafafa; }
-  .news-row-body { flex:1; min-width:0; }
-  .news-img {
-    flex:0 0 220px; width:220px; height:148px;
-    object-fit:cover; border-radius:6px;
-    background:var(--border); order:0; flex-shrink:0;
-  }
-  .news-row-headline { font-size:16px; font-weight:600; color:var(--text); line-height:1.45; }
-  .news-row-headline.lead { font-size:20px; font-weight:700; line-height:1.35; margin-bottom:8px; }
-  .news-row-desc { font-size:13px; font-weight:400; color:var(--text2); line-height:1.7; margin-top:8px; }
-  .news-row-meta { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text3); margin-top:10px; }
-  .dot-sep { color:var(--border-2); }
+/* ═══ ARTICLE ROW ═══ */
+a.art {
+  display:flex; gap:20px; padding:24px 20px;
+  border-bottom:1px solid var(--border-s);
+  text-decoration:none; color:inherit;
+  transition:background .12s;
+  align-items:flex-start;
+}
+a.art:last-child { border-bottom:none; }
+a.art:hover { background:#fafaf8; }
+.art-img {
+  flex:0 0 200px; width:200px; height:133px;
+  object-fit:cover; border-radius:var(--r);
+  background:var(--border-s);
+}
+.art-body { flex:1; min-width:0; display:flex; flex-direction:column; gap:0; }
+.art-src {
+  font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--text3); margin-bottom:7px;
+}
+.art-title {
+  font-size:16px; font-weight:600; color:var(--text);
+  line-height:1.42; letter-spacing:-.01em;
+}
+.art-title.lead {
+  font-size:20px; font-weight:700; line-height:1.3; letter-spacing:-.02em;
+}
+.art-desc {
+  font-size:13px; color:var(--text2); line-height:1.7;
+  margin-top:9px; font-weight:400;
+}
+.art-time {
+  font-size:10px; color:var(--text3); font-family:var(--mono);
+  margin-top:12px; letter-spacing:.02em;
+}
+/* no image fallback */
+a.art.no-img .art-body { width:100%; }
 
-  /* ── SIDEBAR ── */
-  .sidebar { display:flex; flex-direction:column; gap:12px; }
-  .s-block { background:var(--white); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
-  .s-head  { padding:8px 14px; border-bottom:1px solid var(--border-2); }
-  .s-title { font-size:10px; font-weight:600; letter-spacing:.7px; text-transform:uppercase; color:var(--text3); }
-  .s-body  { padding:4px 0; }
-  .s-row   { display:flex; justify-content:space-between; align-items:center; padding:7px 14px; border-bottom:1px solid var(--border-2); font-size:12px; }
-  .s-row:last-child { border-bottom:none; }
-  .s-label { color:var(--text2); font-weight:400; }
-  .s-val   { font-family:var(--mono); font-size:12px; font-weight:500; color:var(--text); }
-  .s-right { text-align:right; }
-  .s-price { font-family:var(--mono); font-size:12px; color:var(--text); }
-  .s-chg   { font-family:var(--mono); font-size:11px; }
-  .up   { color:var(--green); }
-  .down { color:var(--red); }
-  .neu  { color:var(--text3); }
-  .refresh-note { font-family:var(--mono); font-size:10px; color:var(--text3); text-align:right; padding-top:4px; }
+/* ═══ DATA SIDEBAR ═══ */
+.data-col { display:flex; flex-direction:column; gap:12px; }
+.d-block { background:var(--surface); border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; box-shadow:var(--shadow); }
+.d-hdr { padding:9px 16px; border-bottom:1px solid var(--border-s); }
+.d-hdr-label { font-size:10px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--text3); }
+.d-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 16px; border-bottom:1px solid var(--border-s); font-size:12px;
+}
+.d-row:last-child { border-bottom:none; }
+.d-lbl { color:var(--text2); font-weight:400; font-size:12px; }
+.d-val { font-family:var(--mono); font-size:12px; font-weight:500; color:var(--text); }
+.d-right { text-align:right; }
+.d-price { font-family:var(--mono); font-size:12px; font-weight:500; color:var(--text); }
+.d-chg   { font-family:var(--mono); font-size:10px; margin-top:1px; }
+.up   { color:var(--green); }
+.down { color:var(--red); }
+.neu  { color:var(--text3); }
+.d-ts { font-family:var(--mono); font-size:10px; color:var(--text3); text-align:right; padding:8px 16px 4px; }
 
-  /* ── FILTERS ── */
-  .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
-  .filter-btn {
-    font-size:12px; font-weight:500;
-    padding:5px 13px; border-radius:20px;
-    border:1px solid var(--border); background:var(--white);
-    color:var(--text2); cursor:pointer; transition:all .12s;
-  }
-  .filter-btn:hover { border-color:var(--text2); color:var(--text); }
-  .filter-btn.active { background:var(--text); border-color:var(--text); color:#fff; }
+/* ═══ FILTERS ═══ */
+.filters { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:20px; }
+.f-btn {
+  font-size:11px; font-weight:500; letter-spacing:.02em;
+  padding:5px 14px; border-radius:20px;
+  border:1px solid var(--border); background:var(--surface);
+  color:var(--text2); cursor:pointer; transition:all .12s;
+}
+.f-btn:hover { border-color:var(--text2); color:var(--text); }
+.f-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
 
-  /* ── MARITIME ── */
-  .source-pill {
-    font-size:11px; font-weight:500; font-family:var(--mono);
-    padding:3px 10px; border-radius:20px; cursor:pointer;
-    border:1px solid var(--border); background:var(--white);
-    color:var(--text3); transition:all .12s; user-select:none;
-  }
-  .source-pill.active { background:var(--accent-bg); border-color:var(--accent-bd); color:var(--green); }
-  .cat-tag {
-    display:inline-block; font-size:9px; font-weight:600; letter-spacing:.5px;
-    text-transform:uppercase; padding:1px 7px; border-radius:20px; margin-left:6px;
-    vertical-align:middle; background:var(--tag-bg); color:var(--text3);
-  }
-  .cat-armateurs      { background:#eff6ff; color:#1d4ed8; }
-  .cat-ports          { background:#f0fdf4; color:#15803d; }
-  .cat-construction   { background:#fff7ed; color:#c2410c; }
-  .cat-reglementation { background:#fdf4ff; color:#7e22ce; }
-  .cat-economie       { background:#fefce8; color:#854d0e; }
+/* ═══ MARITIME ═══ */
+.src-pill {
+  font-size:10px; font-weight:500; font-family:var(--mono); letter-spacing:.03em;
+  padding:4px 10px; border-radius:20px; cursor:pointer;
+  border:1px solid var(--border); background:var(--surface);
+  color:var(--text3); transition:all .12s; user-select:none;
+}
+.src-pill.active { background:var(--green-bg); border-color:#86efac; color:var(--green); }
+.cat-tag {
+  display:inline-block; font-size:9px; font-weight:600; letter-spacing:.05em;
+  text-transform:uppercase; padding:2px 7px; border-radius:3px; margin-left:8px;
+  vertical-align:middle;
+}
+.cat-armateurs      { background:#eff6ff; color:#1d4ed8; }
+.cat-ports          { background:#f0fdf4; color:#166534; }
+.cat-construction   { background:#fff7ed; color:#c2410c; }
+.cat-reglementation { background:#fdf4ff; color:#7e22ce; }
+.cat-economie       { background:#fefce8; color:#854d0e; }
 
-  /* ── SKELETON ── */
-  .sk {
-    display:inline-block; border-radius:3px;
-    background:linear-gradient(90deg,var(--border) 25%,var(--border-2) 50%,var(--border) 75%);
-    background-size:200% 100%; animation:sh 1.4s infinite;
-  }
-  @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+/* ═══ SKELETON ═══ */
+.sk {
+  display:inline-block; border-radius:3px;
+  background:linear-gradient(90deg,var(--border) 25%,var(--border-s) 50%,var(--border) 75%);
+  background-size:200% 100%; animation:sh 1.5s infinite;
+}
+@keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.sk-art { padding:24px 20px; border-bottom:1px solid var(--border-s); display:flex; gap:20px; }
+.sk-img { flex:0 0 200px; height:133px; border-radius:var(--r); background:var(--border-s); }
 
-  @media(max-width:1024px) {
-    .macro-grid { flex-direction:column; }
-    .macro-grid .sidebar { position:static; width:100%; flex:none; }
-    .sector-grid { grid-template-columns:1fr; }
-  }
-  @media(max-width:640px) {
-    .main { padding:12px 16px; }
-    .topbar, .tabs-bar { padding:0 16px; }
-  }
+@media(max-width:1100px) {
+  .macro-grid { flex-direction:column; }
+  .macro-grid .data-col { position:static; width:100%; flex:none; display:grid; grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:640px) {
+  .main { padding:16px; }
+  .topbar, .tabs-bar { padding:0 16px; }
+  a.art { flex-direction:column; }
+  .art-img { width:100%; flex:none; height:200px; }
+  .macro-grid .data-col { grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
 
-<!-- ── TOPBAR ── -->
+<!-- TOPBAR -->
 <header class="topbar">
-  <div class="topbar-left">
-    <span class="topbar-title">Market Dashboard</span>
-    <span class="badge"><span class="badge-dot"></span>Live</span>
+  <div class="topbar-brand">
+    <span class="topbar-logo">MAGELLAN FINANCE</span>
+    <span class="topbar-sep"></span>
+    <span class="topbar-sub">Market Intelligence</span>
+    <div class="live-pill"><span class="live-dot"></span>LIVE</div>
   </div>
   <div class="topbar-right">
-    <span class="clock" id="clock">—</span>
-    <button class="btn" onclick="init()">↻ Refresh</button>
+    <span class="t-clock" id="clock">—</span>
+    <button class="t-btn" onclick="init()">↻ Refresh</button>
   </div>
 </header>
 
-<!-- ── TABS ── -->
+<!-- TABS -->
 <nav class="tabs-bar">
   <button class="tab active" onclick="switchTab('macro',this)">Macro Overview</button>
   <button class="tab" onclick="switchTab('sector',this)">Sector News</button>
@@ -211,268 +240,225 @@
 
 <main class="main">
 
-<!-- ════════════════════ TAB 1 — MACRO ════════════════════ -->
+<!-- ══ TAB 1 — MACRO ══ -->
 <div id="tab-macro" class="tab-content active">
-  <div class="banner" id="macro-banner">
-    ⚙ Colle l'URL de ton Apps Script dans <code>SCRIPT_URL</code> en bas de ce fichier pour activer les données live.
+  <div class="banner" id="cfg-banner">
+    ⚙ Configure <code>SCRIPT_URL</code> at the bottom of this file to enable live data.
   </div>
   <div class="macro-grid">
 
-    <!-- News feed -->
-    <div class="news-card">
-      <div class="news-card-header">
-        <span class="news-card-title">Macro &amp; Markets</span>
-        <span class="news-count" id="macro-count">—</span>
-      </div>
-      <div id="macro-news">
-        <div style="padding:14px 16px;border-bottom:1px solid var(--border-2);">
-          <div class="sk" style="width:85%;height:16px;margin-bottom:8px;"></div>
-          <div class="sk" style="width:65%;height:12px;margin-bottom:4px;"></div>
-          <div class="sk" style="width:52%;height:12px;margin-bottom:8px;"></div>
-          <div style="display:flex;gap:8px;"><span class="sk" style="width:60px;height:10px;"></span><span class="sk" style="width:40px;height:10px;"></span></div>
+    <div class="feed-col">
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-label">Macro &amp; Markets</span>
+          <span class="card-meta" id="macro-count">—</span>
         </div>
-        <div style="padding:14px 16px;border-bottom:1px solid var(--border-2);">
-          <div class="sk" style="width:78%;height:14px;margin-bottom:8px;"></div>
-          <div style="display:flex;gap:8px;"><span class="sk" style="width:55px;height:10px;"></span><span class="sk" style="width:40px;height:10px;"></span></div>
-        </div>
-        <div style="padding:14px 16px;border-bottom:1px solid var(--border-2);">
-          <div class="sk" style="width:82%;height:14px;margin-bottom:8px;"></div>
-          <div style="display:flex;gap:8px;"><span class="sk" style="width:60px;height:10px;"></span><span class="sk" style="width:40px;height:10px;"></span></div>
-        </div>
-        <div style="padding:14px 16px;">
-          <div class="sk" style="width:72%;height:14px;margin-bottom:8px;"></div>
-          <div style="display:flex;gap:8px;"><span class="sk" style="width:50px;height:10px;"></span><span class="sk" style="width:40px;height:10px;"></span></div>
+        <div id="macro-feed">
+          <div class="sk-art"><div class="sk-img sk"></div><div style="flex:1;display:flex;flex-direction:column;gap:8px;padding-top:4px;"><div class="sk" style="height:20px;width:90%;"></div><div class="sk" style="height:13px;width:75%;"></div><div class="sk" style="height:13px;width:60%;"></div><div class="sk" style="height:10px;width:40%;margin-top:8px;"></div></div></div>
+          <div class="sk-art"><div class="sk-img sk"></div><div style="flex:1;display:flex;flex-direction:column;gap:8px;padding-top:4px;"><div class="sk" style="height:16px;width:85%;"></div><div class="sk" style="height:13px;width:65%;"></div><div class="sk" style="height:10px;width:35%;margin-top:8px;"></div></div></div>
+          <div class="sk-art" style="border:none;"><div class="sk-img sk"></div><div style="flex:1;display:flex;flex-direction:column;gap:8px;padding-top:4px;"><div class="sk" style="height:16px;width:80%;"></div><div class="sk" style="height:13px;width:55%;"></div><div class="sk" style="height:10px;width:30%;margin-top:8px;"></div></div></div>
         </div>
       </div>
     </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="data-col">
+      <div class="d-block">
+        <div class="d-hdr"><span class="d-hdr-label">Central Bank Rates</span></div>
+        <div class="d-row"><span class="d-lbl">ECB Deposit</span><span class="d-val" id="ecb-rate"><span class="sk" style="width:38px;height:12px;"></span></span></div>
+        <div class="d-row"><span class="d-lbl">Fed Funds (upper)</span><span class="d-val" id="fed-rate"><span class="sk" style="width:38px;height:12px;"></span></span></div>
+        <div class="d-row"><span class="d-lbl">US 10Y</span><span class="d-val" id="us10y"><span class="sk" style="width:38px;height:12px;"></span></span></div>
+        <div class="d-row"><span class="d-lbl">DE 10Y Bund</span><span class="d-val" id="eur10y"><span class="sk" style="width:38px;height:12px;"></span></span></div>
+      </div>
 
-      <div class="s-block">
-        <div class="s-head"><span class="s-title">Central Bank Rates</span></div>
-        <div class="s-body">
-          <div class="s-row"><span class="s-label">ECB Deposit</span><span class="s-val" id="ecb-rate"><span class="sk" style="width:36px;height:12px;"></span></span></div>
-          <div class="s-row"><span class="s-label">Fed Funds (upper)</span><span class="s-val" id="fed-rate"><span class="sk" style="width:36px;height:12px;"></span></span></div>
-          <div class="s-row"><span class="s-label">US 10Y</span><span class="s-val" id="us10y"><span class="sk" style="width:36px;height:12px;"></span></span></div>
-          <div class="s-row"><span class="s-label">DE 10Y Bund</span><span class="s-val" id="eur10y"><span class="sk" style="width:36px;height:12px;"></span></span></div>
+      <div class="d-block">
+        <div class="d-hdr"><span class="d-hdr-label">Equity Indices</span></div>
+        <div id="indices-list">
+          <div class="d-row"><span class="sk" style="width:60px;height:11px;"></span><div class="d-right"><div class="sk" style="width:52px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="d-row"><span class="sk" style="width:52px;height:11px;"></span><div class="d-right"><div class="sk" style="width:52px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="d-row"><span class="sk" style="width:64px;height:11px;"></span><div class="d-right"><div class="sk" style="width:52px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="d-row"><span class="sk" style="width:56px;height:11px;"></span><div class="d-right"><div class="sk" style="width:52px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="d-row"><span class="sk" style="width:46px;height:11px;"></span><div class="d-right"><div class="sk" style="width:52px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
         </div>
       </div>
 
-      <div class="s-block">
-        <div class="s-head"><span class="s-title">Equity Indices</span></div>
-        <div class="s-body" id="indices-list">
-          <div class="s-row"><span class="sk" style="width:64px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
-          <div class="s-row"><span class="sk" style="width:54px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
-          <div class="s-row"><span class="sk" style="width:70px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
-          <div class="s-row"><span class="sk" style="width:60px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
-          <div class="s-row"><span class="sk" style="width:50px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+      <div class="d-block">
+        <div class="d-hdr"><span class="d-hdr-label">Forex</span></div>
+        <div id="fx-list">
+          <div class="d-row"><span class="sk" style="width:54px;height:11px;"></span><div class="d-right"><div class="sk" style="width:52px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="d-row"><span class="sk" style="width:54px;height:11px;"></span><div class="d-right"><div class="sk" style="width:52px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="d-row"><span class="sk" style="width:54px;height:11px;"></span><div class="d-right"><div class="sk" style="width:52px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
         </div>
       </div>
 
-      <div class="s-block">
-        <div class="s-head"><span class="s-title">Forex</span></div>
-        <div class="s-body" id="fx-list">
-          <div class="s-row"><span class="sk" style="width:55px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
-          <div class="s-row"><span class="sk" style="width:55px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
-          <div class="s-row"><span class="sk" style="width:55px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
-        </div>
+      <div class="d-block">
+        <div class="d-hdr"><span class="d-hdr-label">EUR Swap (IRS Mid)</span></div>
+        <div class="d-row"><span class="d-lbl">3Y</span><span class="d-val" id="swap-3y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
+        <div class="d-row"><span class="d-lbl">4Y</span><span class="d-val" id="swap-4y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
+        <div class="d-row"><span class="d-lbl">5Y</span><span class="d-val" id="swap-5y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
+        <div class="d-row"><span class="d-lbl">6Y</span><span class="d-val" id="swap-6y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
+        <div class="d-row"><span class="d-lbl">7Y</span><span class="d-val" id="swap-7y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
       </div>
 
-      <div class="s-block">
-        <div class="s-head"><span class="s-title">EUR Swap Rates (IRS Mid)</span></div>
-        <div class="s-body">
-          <div class="s-row"><span class="s-label">3Y</span><span class="s-val" id="swap-3y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
-          <div class="s-row"><span class="s-label">4Y</span><span class="s-val" id="swap-4y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
-          <div class="s-row"><span class="s-label">5Y</span><span class="s-val" id="swap-5y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
-          <div class="s-row"><span class="s-label">6Y</span><span class="s-val" id="swap-6y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
-          <div class="s-row"><span class="s-label">7Y</span><span class="s-val" id="swap-7y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
-        </div>
-      </div>
-
-      <div class="refresh-note" id="refresh-note">—</div>
+      <div class="d-ts" id="d-ts">—</div>
     </div>
 
   </div>
 </div>
 
-<!-- ════════════════════ TAB 2 — SECTOR ════════════════════ -->
+<!-- ══ TAB 2 — SECTOR ══ -->
 <div id="tab-sector" class="tab-content">
   <div class="filters">
-    <button class="filter-btn active" onclick="selectSector('private-debt',this)">Private Debt</button>
-    <button class="filter-btn" onclick="selectSector('ma',this)">M&amp;A</button>
-    <button class="filter-btn" onclick="selectSector('private-equity',this)">Private Equity</button>
-    <button class="filter-btn" onclick="selectSector('real-estate',this)">Real Estate</button>
-    <button class="filter-btn" onclick="selectSector('credit',this)">Credit Markets</button>
-    <button class="filter-btn" onclick="selectSector('ipo',this)">IPO / ECM</button>
-    <button class="filter-btn" onclick="selectSector('infrastructure',this)">Infrastructure</button>
-    <button class="filter-btn" onclick="selectSector('rates',this)">Fixed Income</button>
+    <button class="f-btn active" onclick="selSector('private-debt',this)">Private Debt</button>
+    <button class="f-btn" onclick="selSector('ma',this)">M&amp;A</button>
+    <button class="f-btn" onclick="selSector('private-equity',this)">Private Equity</button>
+    <button class="f-btn" onclick="selSector('real-estate',this)">Real Estate</button>
+    <button class="f-btn" onclick="selSector('credit',this)">Credit Markets</button>
+    <button class="f-btn" onclick="selSector('ipo',this)">IPO / ECM</button>
+    <button class="f-btn" onclick="selSector('infrastructure',this)">Infrastructure</button>
+    <button class="f-btn" onclick="selSector('rates',this)">Fixed Income</button>
   </div>
-  <div class="news-card">
-    <div class="news-card-header">
-      <span class="news-card-title" id="sector-title">Private Debt — Latest</span>
-      <span class="news-count" id="sector-count">—</span>
+  <div class="card">
+    <div class="card-hdr">
+      <span class="card-label" id="sector-label">Private Debt — Latest</span>
+      <span class="card-meta" id="sector-count">—</span>
     </div>
-    <div id="sector-news"><div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading...</div></div>
+    <div id="sector-feed"><div style="padding:24px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading…</div></div>
   </div>
 </div>
 
-<!-- ════════════════════ TAB 3 — MARITIME ════════════════════ -->
+<!-- ══ TAB 3 — MARITIME ══ -->
 <div id="tab-maritime" class="tab-content">
   <div class="filters">
-    <button class="filter-btn active" onclick="filterMaritime('all',this)">Tous</button>
-    <button class="filter-btn" onclick="filterMaritime('armateurs',this)">Armateurs / Shipping</button>
-    <button class="filter-btn" onclick="filterMaritime('ports',this)">Ports &amp; Logistique</button>
-    <button class="filter-btn" onclick="filterMaritime('construction',this)">Construction navale</button>
-    <button class="filter-btn" onclick="filterMaritime('reglementation',this)">Réglementation / IMO</button>
-    <button class="filter-btn" onclick="filterMaritime('economie',this)">Économie maritime</button>
+    <button class="f-btn active" onclick="filterMaritime('all',this)">Tous</button>
+    <button class="f-btn" onclick="filterMaritime('armateurs',this)">Armateurs</button>
+    <button class="f-btn" onclick="filterMaritime('ports',this)">Ports &amp; Logistique</button>
+    <button class="f-btn" onclick="filterMaritime('construction',this)">Construction navale</button>
+    <button class="f-btn" onclick="filterMaritime('reglementation',this)">Réglementation</button>
+    <button class="f-btn" onclick="filterMaritime('economie',this)">Économie</button>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-    <span style="font-size:11px;color:var(--text3);font-family:var(--mono);">Sources :</span>
-    <span class="source-pill active" onclick="toggleSource('Le Marin',this)">Le Marin</span>
-    <span class="source-pill active" onclick="toggleSource('Mer et Marine',this)">Mer et Marine</span>
-    <span class="source-pill active" onclick="toggleSource('JMM',this)">JMM</span>
-    <span class="source-pill active" onclick="toggleSource('Google News Maritime',this)">Google News</span>
-    <span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text3);" id="maritime-count">—</span>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+    <span style="font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase;">Sources</span>
+    <span class="src-pill active" onclick="toggleSrc('Le Marin',this)">Le Marin</span>
+    <span class="src-pill active" onclick="toggleSrc('Mer et Marine',this)">Mer et Marine</span>
+    <span class="src-pill active" onclick="toggleSrc('JMM',this)">JMM</span>
+    <span class="src-pill active" onclick="toggleSrc('Google News Maritime',this)">Google News</span>
+    <span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text3);" id="mar-count">—</span>
   </div>
-  <div class="news-card">
-    <div class="news-card-header">
-      <span class="news-card-title" id="maritime-title">Maritime Français — Toutes sources</span>
-      <button class="btn" onclick="fetchMaritime()" style="font-size:11px;padding:3px 10px;">↻</button>
+  <div class="card">
+    <div class="card-hdr">
+      <span class="card-label">Maritime Français</span>
+      <button class="t-btn" onclick="fetchMaritime()" style="background:var(--surface);border:1px solid var(--border);color:var(--text2);font-size:10px;padding:3px 10px;">↻ Actualiser</button>
     </div>
-    <div id="maritime-feed">
-      <div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Chargement...</div>
-    </div>
+    <div id="maritime-feed"><div style="padding:24px;font-size:12px;color:var(--text3);font-family:var(--mono);">Chargement…</div></div>
   </div>
 </div>
 
 </main>
 
 <script>
-// ╔═══════════════════════════════════════════════════════════╗
-// ║  SEUL PARAMÈTRE À MODIFIER                               ║
-// ║  Colle ici l'URL de ton Apps Script déployé              ║
-// ╚═══════════════════════════════════════════════════════════╝
+// ═══════════════════════════════════════════════════════
+// CONFIG — seul paramètre à modifier
+// ═══════════════════════════════════════════════════════
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrABpsO3o4HzFXLF30JMKvk2jgDC4ZF_ljuhg7UR1iC3pcih0Q-nHyy9FIQp4VbXUvsA/exec';
-// Exemple : 'https://script.google.com/macros/s/AKfycb.../exec'
+const REFRESH_MS = 5 * 60 * 1000;
 
-const REFRESH_MS = 5 * 60 * 1000; // refresh toutes les 5 min
-
-// ── Appel Apps Script via JSONP (contourne CORS) ──────────
-function api(endpoint, params = {}) {
-  return new Promise((resolve) => {
-    if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') { resolve(null); return; }
-
-    const cbName = '_cb_' + endpoint.replace(/[^a-z]/g,'') + '_' + Date.now();
-    const timeout = setTimeout(() => {
-      delete window[cbName];
-      const el = document.getElementById('jsonp_' + cbName);
-      if (el) el.remove();
-      resolve(null);
-    }, 15000);
-
-    window[cbName] = (data) => {
-      clearTimeout(timeout);
-      delete window[cbName];
-      const el = document.getElementById('jsonp_' + cbName);
-      if (el) el.remove();
-      resolve(data?.status === 'ok' ? data : null);
-    };
-
-    const qs  = new URLSearchParams({ endpoint, ...params, callback: cbName, t: Date.now() }).toString();
+// ═══ JSONP API ═══════════════════════════════════════════
+function api(endpoint, params={}) {
+  return new Promise(resolve => {
+    if (!SCRIPT_URL || SCRIPT_URL.includes('YOUR_')) { resolve(null); return; }
+    const cb = '_cb_' + endpoint.replace(/\W/g,'') + '_' + Date.now();
+    const tid = setTimeout(() => { cleanup(cb); resolve(null); }, 20000);
+    window[cb] = d => { clearTimeout(tid); cleanup(cb); resolve(d?.status==='ok' ? d : null); };
     const tag = document.createElement('script');
-    tag.id  = 'jsonp_' + cbName;
-    tag.src = SCRIPT_URL + '?' + qs;
-    tag.onerror = () => { clearTimeout(timeout); resolve(null); };
+    tag.id = 'jsonp_' + cb;
+    tag.src = SCRIPT_URL + '?' + new URLSearchParams({endpoint, ...params, callback:cb, t:Date.now()});
+    tag.onerror = () => { clearTimeout(tid); cleanup(cb); resolve(null); };
     document.head.appendChild(tag);
   });
 }
+function cleanup(cb) {
+  delete window[cb];
+  const el = document.getElementById('jsonp_' + cb);
+  if (el) el.remove();
+}
 
-// ── Helpers ───────────────────────────────────────────────
+// ═══ HELPERS ═════════════════════════════════════════════
 function ago(d) {
   const m = Math.floor((Date.now() - new Date(d)) / 60000);
-  if (m < 1)    return 'just now';
-  if (m < 60)   return m + 'm ago';
+  if (m < 1) return 'just now';
+  if (m < 60) return m + 'm ago';
   if (m < 1440) return Math.floor(m/60) + 'h ago';
   return Math.floor(m/1440) + 'd ago';
 }
 const cls = v => parseFloat(v) >= 0 ? 'up' : 'down';
 const sgn = v => parseFloat(v) >= 0 ? '+' : '';
-function $set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+function $id(id) { return document.getElementById(id); }
+function $set(id, v) { const e=$id(id); if(e) e.textContent=v; }
+function strip(h) { return (h||'').replace(/<[^>]*>/g,'').trim(); }
 
-// ── Clock ─────────────────────────────────────────────────
+// ═══ CLOCK ═══════════════════════════════════════════════
 setInterval(() => {
-  $set('clock', new Date().toLocaleTimeString('fr-FR', { timeZone:'Europe/Paris', hour12:false }) + ' CET');
+  $set('clock', new Date().toLocaleTimeString('fr-FR',{timeZone:'Europe/Paris',hour12:false}) + ' CET');
 }, 1000);
 
-// ── Tabs ──────────────────────────────────────────────────
+// ═══ TABS ════════════════════════════════════════════════
 function switchTab(name, btn) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+  $id('tab-'+name).classList.add('active');
   btn.classList.add('active');
-  if (name === 'maritime' && !maritimeState.loaded) fetchMaritime();
+  if (name === 'maritime' && !marState.loaded) fetchMaritime();
 }
 
-// ── Render news ───────────────────────────────────────────
-function renderNews(articles, containerId, firstLead) {
-  const el = document.getElementById(containerId);
+// ═══ RENDER ARTICLES ═════════════════════════════════════
+function renderFeed(articles, containerId, leadFirst) {
+  const el = $id(containerId);
   if (!articles?.length) {
-    el.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">No articles found.</div>';
+    el.innerHTML = '<div style="padding:32px 20px;text-align:center;font-size:12px;color:var(--text3);font-family:var(--mono);">No articles found.</div>';
     return;
   }
   el.innerHTML = articles.map((a, i) => {
-    const url   = a.url || '#';
-    const lead  = firstLead && i === 0;
-    const desc  = (a.description || '').replace(/<[^>]*>/g,'').trim();
+    const lead  = leadFirst && i === 0;
     const img   = a.urlToImage || a.image || '';
-    const short = desc.substring(0, lead ? 400 : 300);
-    const more  = desc.length > (lead ? 400 : 300) ? '…' : '';
-    return `<a class="news-row${img ? ' has-img' : ''}" href="${url}" target="_blank" rel="noopener noreferrer">
-      ${img ? `<img class="news-img" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
-      <div class="news-row-body">
-        <div class="news-row-headline${lead ? ' lead' : ''}">${a.title}</div>
-        ${desc ? `<div class="news-row-desc">${short}${more}</div>` : ''}
-        <div class="news-row-meta">
-          <span>${a.source?.name || '—'}</span>
-          <span class="dot-sep">·</span>
-          <span>${ago(a.publishedAt || Date.now())}</span>
-        </div>
+    const desc  = strip(a.description || '');
+    const cut   = lead ? 420 : 260;
+    const snip  = desc ? desc.substring(0, cut) + (desc.length > cut ? '…' : '') : '';
+    return `<a class="art${img ? '' : ' no-img'}" href="${a.url||'#'}" target="_blank" rel="noopener noreferrer">
+      ${img ? `<img class="art-img" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+      <div class="art-body">
+        <div class="art-src">${a.source?.name || '—'}</div>
+        <div class="art-title${lead?' lead':''}">${a.title}</div>
+        ${snip ? `<div class="art-desc">${snip}</div>` : ''}
+        <div class="art-time">${ago(a.publishedAt||Date.now())}</div>
       </div>
     </a>`;
   }).join('');
 }
 
-// ══════════════════════════════════════════════════════════
-// MACRO NEWS
-// ══════════════════════════════════════════════════════════
-async function fetchMacroNews() {
+// ═══ MACRO NEWS ══════════════════════════════════════════
+async function fetchMacro() {
   const d = await api('macro_news');
   if (d?.articles?.length) {
-    renderNews(d.articles, 'macro-news', true);
+    renderFeed(d.articles, 'macro-feed', true);
     $set('macro-count', d.articles.length + ' articles');
-    document.getElementById('macro-banner').style.display = 'none';
-  } else macroMock();
+    $id('cfg-banner').style.display = 'none';
+  } else macroFallback();
 }
 
-function macroMock() {
+function macroFallback() {
   const n = Date.now();
-  renderNews([
-    { source:{name:'Financial Times'}, publishedAt:new Date(n-35*60000).toISOString(),  title:'ECB signals pause on rate cuts as services inflation remains sticky at 4.0%', description:"ECB policymakers indicated that further easing is contingent on a clearer disinflation trend in services, which has proved resistant to the tightening cycle.", url:'https://www.ft.com/content/ecb-rates-services-inflation-2025' },
-    { source:{name:'Reuters'},         publishedAt:new Date(n-78*60000).toISOString(),  title:'Federal Reserve holds rates steady; dot plot signals two cuts in 2025 if data cooperate', url:'https://www.reuters.com/markets/us/federal-reserve-holds-rates-steady-2025-03-06/' },
-    { source:{name:'Bloomberg'},       publishedAt:new Date(n-140*60000).toISOString(), title:'Eurozone Q4 GDP revised to +0.1% as German contraction offset by Spanish growth', url:'https://www.bloomberg.com/news/articles/eurozone-gdp-q4-revised-2025' },
-    { source:{name:'WSJ'},             publishedAt:new Date(n-210*60000).toISOString(), title:'US February payrolls beat at +275k; unemployment edges up to 3.9%', url:'https://www.wsj.com/economy/jobs/february-jobs-report-2025' },
-    { source:{name:'The Economist'},   publishedAt:new Date(n-310*60000).toISOString(), title:'Global debt reaches $315 trillion — IMF warns developing markets face refinancing crunch', url:'https://www.economist.com/finance-and-economics/2025/03/global-debt-imf' },
-    { source:{name:'Les Echos'},       publishedAt:new Date(n-420*60000).toISOString(), title:"La BCE maintient ses taux, Lagarde prudente sur la trajectoire d'assouplissement", url:'https://www.lesechos.fr/finance-marches/marches-financiers/bce-taux-lagarde-2025' },
-    { source:{name:"Barron's"},        publishedAt:new Date(n-510*60000).toISOString(), title:"China's deflation deepens for third consecutive month, raising pressure for further stimulus", url:'https://www.barrons.com/articles/china-deflation-stimulus-2025' },
-    { source:{name:'FT'},              publishedAt:new Date(n-640*60000).toISOString(), title:'BoE holds at 4.5% as UK wage growth keeps core CPI elevated', url:'https://www.ft.com/content/boe-holds-rates-uk-cpi-2025' },
-  ], 'macro-news', true);
-  $set('macro-count', '8 articles (demo)');
+  renderFeed([
+    { source:{name:'Financial Times'}, publishedAt:new Date(n-25*60000).toISOString(), title:'ECB holds rates as services inflation proves sticky; Lagarde signals no rush to cut', description:'The European Central Bank kept its deposit rate at 2.50% amid persistent services inflation running at 3.9%, well above target. Lagarde cautioned that the disinflation process was not yet secure enough to justify accelerating the easing cycle.', url:'https://www.ft.com/central-banks', urlToImage:'' },
+    { source:{name:'Reuters'}, publishedAt:new Date(n-95*60000).toISOString(), title:'Federal Reserve signals two cuts in 2025 but raises inflation forecast; markets reprice terminal rate', description:'Fed policymakers revised their core PCE projection upward to 2.8% while maintaining guidance for two 25bp cuts this year. Chair Powell emphasised the central bank was in no hurry and would remain data-dependent amid tariff uncertainty.', url:'https://www.reuters.com/markets/rates-bonds', urlToImage:'' },
+    { source:{name:'Bloomberg'}, publishedAt:new Date(n-160*60000).toISOString(), title:"Germany's fiscal bazooka: €500bn infrastructure fund reshapes European growth outlook", description:'The newly elected German government passed a historic constitutional amendment unlocking €500bn in off-budget spending on infrastructure and defence over ten years. The move is expected to add 0.5–0.8pp to eurozone GDP and has triggered a sharp repricing of German Bunds.', url:'https://www.bloomberg.com/europe', urlToImage:'' },
+    { source:{name:'WSJ'}, publishedAt:new Date(n-230*60000).toISOString(), title:'US payrolls +275k in February; unemployment rises to 3.9% as participation ticks up', description:'The February jobs report beat consensus estimates, though the unemployment rate ticked higher on a surge in labour force participation. Average hourly earnings rose 0.3% MoM, keeping the Fed on hold for now.', url:'https://www.wsj.com/economy', urlToImage:'' },
+    { source:{name:'FT'}, publishedAt:new Date(n-340*60000).toISOString(), title:'China deflation deepens for third consecutive month; PBoC signals further stimulus', description:'Chinese consumer prices fell 0.7% YoY in February, extending the deflationary spiral that has prompted the PBoC to signal additional monetary easing. Analysts expect a 50bp RRR cut before end of Q2.', url:'https://www.ft.com/china-economy', urlToImage:'' },
+    { source:{name:'Bloomberg'}, publishedAt:new Date(n-440*60000).toISOString(), title:'Global credit spreads tighten to post-2021 lows as default cycle stays benign', description:'Investment-grade and high-yield spreads both compressed to multi-year lows in a week of strong primary market issuance. Analysts warn the valuation buffer against a potential macro shock is historically thin.', url:'https://www.bloomberg.com/markets/credit', urlToImage:'' },
+  ], 'macro-feed', true);
+  $set('macro-count', '6 articles (demo)');
 }
 
-// ══════════════════════════════════════════════════════════
-// RATES + SWAP
-// ══════════════════════════════════════════════════════════
+// ═══ RATES + SWAPS ═══════════════════════════════════════
 async function fetchRates() {
   const d = await api('rates');
   if (d) {
@@ -480,186 +466,159 @@ async function fetchRates() {
     if (d.fed)   $set('fed-rate',  d.fed   + '%');
     if (d.us10y) $set('us10y',     d.us10y + '%');
     if (d.eur10y)$set('eur10y',    d.eur10y+ '%');
-    if (d.swaps) {
-      Object.entries(d.swaps).forEach(([tenor, val]) => {
-        $set('swap-' + tenor.toLowerCase(), val + '%');
-      });
-    }
-    $set('refresh-note', 'Refreshed ' + new Date().toLocaleTimeString('fr-FR'));
+    if (d.swaps) { ['3y','4y','5y','6y','7y'].forEach(t => { if (d.swaps[t.toUpperCase()]) $set('swap-'+t, d.swaps[t.toUpperCase()]+'%'); }); }
+    $set('d-ts', 'Updated ' + new Date().toLocaleTimeString('fr-FR'));
   } else {
-    // Fallback demo
-    $set('ecb-rate','3.00%'); $set('fed-rate','4.50%');
-    $set('us10y','4.31%');    $set('eur10y','2.52%');
-    $set('swap-3y','2.441%'); $set('swap-4y','2.487%');
-    $set('swap-5y','2.531%'); $set('swap-6y','2.568%'); $set('swap-7y','2.601%');
-    $set('refresh-note', 'Demo mode · configure SCRIPT_URL');
+    $set('ecb-rate','2.50%'); $set('fed-rate','4.50%');
+    $set('us10y','4.28%');    $set('eur10y','2.54%');
+    $set('swap-3y','2.44%'); $set('swap-4y','2.49%');
+    $set('swap-5y','2.53%'); $set('swap-6y','2.57%'); $set('swap-7y','2.60%');
+    $set('d-ts','Demo mode');
   }
 }
 
-// ══════════════════════════════════════════════════════════
-// QUOTES — Indices & Forex
-// ══════════════════════════════════════════════════════════
-const INDICES  = [
-  { s:'CAC40',   l:'CAC 40'    },
-  { s:'SPX',     l:'S&P 500'   },
-  { s:'IXIC',    l:'Nasdaq'    },
-  { s:'FTSE',    l:'FTSE 100'  },
-  { s:'DAX',     l:'DAX 40'    },
+// ═══ QUOTES ══════════════════════════════════════════════
+const INDICES = [
+  { s:'CAC40', l:'CAC 40'  },
+  { s:'SPX',   l:'S&P 500' },
+  { s:'IXIC',  l:'Nasdaq'  },
+  { s:'FTSE',  l:'FTSE 100'},
+  { s:'DAX',   l:'DAX 40'  },
 ];
-const FX_PAIRS = [{s:'EUR/USD',l:'EUR/USD'},{s:'GBP/USD',l:'GBP/USD'},{s:'EUR/GBP',l:'EUR/GBP'}];
+const FX = [
+  { s:'EUR/USD', l:'EUR/USD' },
+  { s:'GBP/USD', l:'GBP/USD' },
+  { s:'EUR/GBP', l:'EUR/GBP' },
+];
 
 async function fetchQuotes() {
   const d = await api('quotes');
-  if (d) {
-    renderIdx(d.indices);
-    renderFx(d.fx);
-  } else {
-    renderIdx({ 'CAC40':{close:'8142.36',percent_change:'0.47'}, 'SPX':{close:'5776.21',percent_change:'-0.22'}, 'IXIC':{close:'18210.44',percent_change:'-0.31'}, 'FTSE':{close:'8734.55',percent_change:'0.18'}, 'DAX':{close:'23108.40',percent_change:'0.62'} });
+  if (d) { renderIdx(d.indices); renderFx(d.fx); }
+  else {
+    renderIdx({ CAC40:{close:'8142',percent_change:'0.47'}, SPX:{close:'5776',percent_change:'-0.22'}, IXIC:{close:'18210',percent_change:'-0.31'}, FTSE:{close:'8734',percent_change:'0.18'}, DAX:{close:'23108',percent_change:'0.62'} });
     renderFx({ 'EUR/USD':{close:'1.0842',percent_change:'0.14'}, 'GBP/USD':{close:'1.2701',percent_change:'-0.08'}, 'EUR/GBP':{close:'0.8536',percent_change:'0.11'} });
   }
 }
 
 function renderIdx(data) {
-  document.getElementById('indices-list').innerHTML = INDICES.map(i => {
+  $id('indices-list').innerHTML = INDICES.map(i => {
     const q = data?.[i.s];
-    if (!q || q.status === 'error') return `<div class="s-row"><span class="s-label">${i.l}</span><span class="neu s-val">N/A</span></div>`;
+    if (!q || q.status==='error') return `<div class="d-row"><span class="d-lbl">${i.l}</span><span class="neu d-val">N/A</span></div>`;
     const p = parseFloat(q.close||q.price||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
     const c = parseFloat(q.percent_change||0);
-    return `<div class="s-row"><span class="s-label">${i.l}</span><div class="s-right"><div class="s-price">${p}</div><div class="s-chg ${cls(c)}">${sgn(c)}${c.toFixed(2)}%</div></div></div>`;
+    return `<div class="d-row"><span class="d-lbl">${i.l}</span><div class="d-right"><div class="d-price">${p}</div><div class="d-chg ${cls(c)}">${sgn(c)}${c.toFixed(2)}%</div></div></div>`;
   }).join('');
 }
 
 function renderFx(data) {
-  document.getElementById('fx-list').innerHTML = FX_PAIRS.map(f => {
+  $id('fx-list').innerHTML = FX.map(f => {
     const q = data?.[f.s];
-    if (!q || q.status === 'error') return `<div class="s-row"><span class="s-label">${f.l}</span><span class="neu s-val">N/A</span></div>`;
+    if (!q || q.status==='error') return `<div class="d-row"><span class="d-lbl">${f.l}</span><span class="neu d-val">N/A</span></div>`;
     const p = parseFloat(q.close||q.price||0).toFixed(4);
     const c = parseFloat(q.percent_change||0);
-    return `<div class="s-row"><span class="s-label">${f.l}</span><div class="s-right"><div class="s-price">${p}</div><div class="s-chg ${cls(c)}">${sgn(c)}${c.toFixed(3)}%</div></div></div>`;
+    return `<div class="d-row"><span class="d-lbl">${f.l}</span><div class="d-right"><div class="d-price">${p}</div><div class="d-chg ${cls(c)}">${sgn(c)}${c.toFixed(3)}%</div></div></div>`;
   }).join('');
 }
 
-// ══════════════════════════════════════════════════════════
-// SECTOR NEWS
-// ══════════════════════════════════════════════════════════
-function selectSector(sector, btn) {
-  document.querySelectorAll('#tab-sector .filter-btn').forEach(b => b.classList.remove('active'));
+// ═══ SECTOR ══════════════════════════════════════════════
+function selSector(sector, btn) {
+  document.querySelectorAll('#tab-sector .f-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  $set('sector-title', btn.textContent + ' — Latest');
-  fetchSectorNews(sector);
+  $set('sector-label', btn.textContent + ' — Latest');
+  fetchSector(sector);
 }
 
-async function fetchSectorNews(sector) {
-  document.getElementById('sector-news').innerHTML = '<div style="padding:20px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading...</div>';
+async function fetchSector(sector) {
+  $id('sector-feed').innerHTML = '<div style="padding:24px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading…</div>';
   const d = await api('sector_news', { sector });
   if (d?.articles?.length) {
-    renderNews(d.articles, 'sector-news', true);
+    renderFeed(d.articles, 'sector-feed', true);
     $set('sector-count', d.articles.length + ' articles');
-  } else sectorMock(sector);
+  } else sectorFallback(sector);
 }
 
+const SECTOR_FALLBACK = {
+  'private-debt':   [{source:{name:'Private Debt Investor'},publishedAt:new Date(Date.now()-30*60000).toISOString(),title:'Ares Capital closes €2.5bn direct lending mandate for European mid-market',description:'The deal marks one of the largest unitranche transactions in the European mid-market this year, with a margin of E+475bp and a 6-year tenor.',url:'https://www.privatedebtinvestor.com'},{source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-110*60000).toISOString(),title:'Apollo raises €4bn for new European private credit fund targeting infrastructure debt',description:'Fund V targets senior secured infrastructure credit across Western Europe with a focus on digital infrastructure and energy transition assets.',url:'https://www.bloomberg.com/markets'}],
+  'ma':             [{source:{name:'Financial Times'},publishedAt:new Date(Date.now()-45*60000).toISOString(),title:'Vivendi completes Canal+ demerger; shares begin trading on London Stock Exchange',description:'The split unlocks value across the media conglomerate\'s three listed entities after a two-year process, with Canal+ now trading independently at a £2.8bn market cap.',url:'https://www.ft.com/ma'},{source:{name:'Reuters'},publishedAt:new Date(Date.now()-150*60000).toISOString(),title:'Global M&A volumes up 22% YTD as PE sponsors resume activity amid tighter credit',url:'https://www.reuters.com/markets/deals'}],
+  'private-equity': [{source:{name:'PE News'},publishedAt:new Date(Date.now()-25*60000).toISOString(),title:'KKR closes €8.2bn European Fund VI ahead of target',description:'The fund, which exceeded its €7.5bn hard cap, will focus on control buyouts in Northern and Western Europe with a bias towards healthcare and technology.',url:'https://www.penews.com'}],
+  'real-estate':    [{source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-55*60000).toISOString(),title:'European logistics valuations bottom out as prime yields stabilise at 4.75%',description:'Transaction volumes in the pan-European logistics sector rose 18% QoQ in Q4 2024 as institutional buyers re-entered the market at stabilised yields.',url:'https://www.bloomberg.com/real-estate'}],
+  'credit':         [{source:{name:'Reuters'},publishedAt:new Date(Date.now()-40*60000).toISOString(),title:'European high-yield primary market reopens with €6bn in January issuance',description:'Issuers returned to the European high-yield market at compressed spreads, with B-rated paper pricing inside 400bp for the first time since 2021.',url:'https://www.reuters.com/markets/rates-bonds'}],
+  'ipo':            [{source:{name:'FT'},publishedAt:new Date(Date.now()-65*60000).toISOString(),title:'European IPO pipeline builds for H1 2025 with 12 mandates at bookrunner stage',description:'Banks report a strong mandate pipeline for Q1-Q2, concentrated in healthcare, industrials, and PE-backed assets seeking exits after a two-year pause.',url:'https://www.ft.com/ipo'}],
+  'infrastructure': [{source:{name:'Infrastructure Investor'},publishedAt:new Date(Date.now()-50*60000).toISOString(),title:'Brookfield Infrastructure targets $25bn for flagship Fund V; first close expected Q2',description:'The fund focuses on data centres, midstream energy, and transport across OECD markets. First close is expected at $10bn by mid-year.',url:'https://www.infrastructureinvestor.com'}],
+  'rates':          [{source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-35*60000).toISOString(),title:'German Bund yields surge 30bp after fiscal package announcement; spread to OAT narrows',description:'The historic German fiscal expansion triggered the sharpest single-week move in Bund yields since 2022, forcing a repricing of the entire European rates complex.',url:'https://www.bloomberg.com/markets/rates-bonds'}],
+};
 
-function sectorMock(sector) {
-  const MOCK = {
-    'private-debt':   [{source:{name:'Private Debt Investor'},publishedAt:new Date(Date.now()-40*60000).toISOString(),title:'Ares Capital closes €2.5bn direct lending facility for European mid-market',url:'https://www.privatedebtinvestor.com/news/ares-capital-direct-lending-2025/'},{source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-120*60000).toISOString(),title:'Apollo raises €4bn for new private credit fund targeting infrastructure debt',url:'https://www.bloomberg.com/news/articles/apollo-private-credit-infrastructure-fund'}],
-    'ma':             [{source:{name:'Financial Times'},publishedAt:new Date(Date.now()-50*60000).toISOString(),title:'Vivendi splits up in €8bn restructuring; Canal+ to list on London Stock Exchange',url:'https://www.ft.com/content/vivendi-canal-plus-demerger-london'},{source:{name:'Reuters'},publishedAt:new Date(Date.now()-160*60000).toISOString(),title:'Global M&A volumes up 18% YTD as PE exits and corporate divestitures accelerate',url:'https://www.reuters.com/markets/deals/global-ma-volumes-2025-q1/'}],
-    'private-equity': [{source:{name:'PE News'},publishedAt:new Date(Date.now()-30*60000).toISOString(),title:'KKR closes €8.2bn European Fund VI — largest pan-European buyout vehicle of the year',url:'https://www.penews.com/articles/kkr-european-fund-vi-close/'},{source:{name:'FT'},publishedAt:new Date(Date.now()-110*60000).toISOString(),title:'Exit environment improves as IPO window reopens for PE-backed companies in H1',url:'https://www.ft.com/content/pe-exits-ipo-window-h1-2025'}],
-    'real-estate':    [{source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-60*60000).toISOString(),title:'REIT valuations recover on lower yield expectations; logistics and residential lead',url:'https://www.bloomberg.com/news/articles/reit-valuations-logistics-2025'}],
-    'credit':         [{source:{name:'Reuters'},publishedAt:new Date(Date.now()-45*60000).toISOString(),title:'High-yield spreads tighten to post-2022 lows as default cycle remains benign',url:'https://www.reuters.com/markets/high-yield-spreads-2025-03-06/'}],
-    'ipo':            [{source:{name:'FT'},publishedAt:new Date(Date.now()-70*60000).toISOString(),title:'European IPO pipeline builds for Q2 as equity markets hold near record levels',url:'https://www.ft.com/content/european-ipo-pipeline-q2-2025'}],
-    'infrastructure': [{source:{name:'Infrastructure Investor'},publishedAt:new Date(Date.now()-55*60000).toISOString(),title:'Brookfield Infrastructure targets $25bn for flagship fund',url:'https://www.infrastructureinvestor.com/brookfield-25bn-flagship-fund/'}],
-    'rates':          [{source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-35*60000).toISOString(),title:'US yield curve steepens as market reprices Fed cutting path to one cut by December',url:'https://www.bloomberg.com/news/articles/yield-curve-steepening-fed-2025'}],
-  };
-  renderNews(MOCK[sector] || [], 'sector-news', false);
-  $set('sector-count', (MOCK[sector]?.length || 0) + ' articles (demo)');
+function sectorFallback(sector) {
+  renderFeed(SECTOR_FALLBACK[sector] || [], 'sector-feed', true);
+  $set('sector-count', (SECTOR_FALLBACK[sector]?.length||0) + ' articles (demo)');
 }
 
-// ══════════════════════════════════════════════════════════
-// MARITIME
-// ══════════════════════════════════════════════════════════
-const maritimeState = { all:[], loaded:false, currentCat:'all', activeSources:new Set(['Le Marin','Mer et Marine','JMM','Google News Maritime']) };
-const CAT_LABELS = { armateurs:'Armateurs', ports:'Ports', construction:'Construction', reglementation:'Réglementation', economie:'Économie' };
+// ═══ MARITIME ════════════════════════════════════════════
+const marState = { all:[], loaded:false, cat:'all', sources:new Set(['Le Marin','Mer et Marine','JMM','Google News Maritime']) };
+const CAT_LBL  = { armateurs:'Armateurs', ports:'Ports', construction:'Construction navale', reglementation:'Réglementation', economie:'Économie' };
 
 async function fetchMaritime() {
-  document.getElementById('maritime-feed').innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Chargement des flux RSS...</div>';
+  $id('maritime-feed').innerHTML = '<div style="padding:24px;font-size:12px;color:var(--text3);font-family:var(--mono);">Chargement des flux RSS…</div>';
   const d = await api('maritime', { category:'all' });
-  if (d?.articles?.length) {
-    maritimeState.all    = d.articles;
-    maritimeState.loaded = true;
-    renderMaritime();
-  } else {
-    maritimeMock();
-  }
+  if (d?.articles?.length) { marState.all=d.articles; marState.loaded=true; renderMaritime(); }
+  else maritimeFallback();
 }
 
 function filterMaritime(cat, btn) {
-  document.querySelectorAll('#tab-maritime .filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#tab-maritime .f-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  maritimeState.currentCat = cat;
+  marState.cat = cat;
   renderMaritime();
 }
 
-function toggleSource(name, pill) {
-  if (maritimeState.activeSources.has(name)) {
-    if (maritimeState.activeSources.size === 1) return;
-    maritimeState.activeSources.delete(name);
-    pill.classList.remove('active');
-  } else {
-    maritimeState.activeSources.add(name);
-    pill.classList.add('active');
-  }
+function toggleSrc(name, pill) {
+  if (marState.sources.has(name)) { if (marState.sources.size===1) return; marState.sources.delete(name); pill.classList.remove('active'); }
+  else { marState.sources.add(name); pill.classList.add('active'); }
   renderMaritime();
 }
 
 function renderMaritime() {
-  const { all, currentCat, activeSources } = maritimeState;
-  const filtered = all.filter(a => activeSources.has(a.source?.name) && (currentCat === 'all' || a.category === currentCat));
-  $set('maritime-count', filtered.length + ' articles');
-  const el = document.getElementById('maritime-feed');
-  if (!filtered.length) { el.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Aucun article.</div>'; return; }
-  el.innerHTML = filtered.map((a, i) => {
-    const lead  = i === 0;
-    const desc  = (a.description || '').replace(/<[^>]*>/g,'').trim();
-    const img   = a.urlToImage || a.image || '';
-    const short = desc.substring(0, lead ? 300 : 200);
-    const more  = desc.length > (lead ? 300 : 200) ? '…' : '';
-    const cat   = a.category && a.category !== 'general' ? a.category : '';
-    const tag   = cat ? `<span class="cat-tag cat-${cat}">${CAT_LABELS[cat]||cat}</span>` : '';
-    return `<a class="news-row${img?' has-img':''}" href="${a.url||'#'}" target="_blank" rel="noopener noreferrer">
-      ${img ? `<img class="news-img" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
-      <div class="news-row-body">
-        <div class="news-row-headline${lead?' lead':''}">${a.title}${tag}</div>
-        ${desc ? `<div class="news-row-desc">${short}${more}</div>` : ''}
-        <div class="news-row-meta"><span>${a.source?.name||'—'}</span><span class="dot-sep">·</span><span>${ago(a.publishedAt||Date.now())}</span></div>
+  const filtered = marState.all.filter(a => marState.sources.has(a.source?.name) && (marState.cat==='all' || a.category===marState.cat));
+  $set('mar-count', filtered.length + ' articles');
+  const el = $id('maritime-feed');
+  if (!filtered.length) { el.innerHTML='<div style="padding:32px;text-align:center;font-size:12px;color:var(--text3);font-family:var(--mono);">Aucun article.</div>'; return; }
+  el.innerHTML = filtered.map((a,i) => {
+    const lead = i===0;
+    const img  = a.urlToImage||a.image||'';
+    const desc = strip(a.description||'');
+    const snip = desc ? desc.substring(0, lead?420:260)+(desc.length>(lead?420:260)?'…':'') : '';
+    const cat  = a.category && a.category!=='general' ? a.category : '';
+    const tag  = cat ? `<span class="cat-tag cat-${cat}">${CAT_LBL[cat]||cat}</span>` : '';
+    return `<a class="art${img?'':' no-img'}" href="${a.url||'#'}" target="_blank" rel="noopener noreferrer">
+      ${img ? `<img class="art-img" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+      <div class="art-body">
+        <div class="art-src">${a.source?.name||'—'}${tag}</div>
+        <div class="art-title${lead?' lead':''}">${a.title}</div>
+        ${snip ? `<div class="art-desc">${snip}</div>` : ''}
+        <div class="art-time">${ago(a.publishedAt||Date.now())}</div>
       </div>
     </a>`;
   }).join('');
 }
 
-function maritimeMock() {
+function maritimeFallback() {
   const n = Date.now();
-  maritimeState.all = [
-    {source:{name:'Le Marin'},            publishedAt:new Date(n-20*60000).toISOString(),  title:"CMA CGM annonce une commande de 12 nouveaux porte-conteneurs GNL au chantier Fincantieri", description:"Le groupe marseillais confirme son engagement dans la décarbonation de sa flotte avec cette commande évaluée à 2,4 milliards d'euros.", url:'https://www.lemarin.fr/transport-maritime/cma-cgm-commande-porte-conteneurs-gnl-fincantieri/', category:'armateurs'},
-    {source:{name:'Mer et Marine'},        publishedAt:new Date(n-55*60000).toISOString(),  title:"Le port de Marseille-Fos enregistre un record de trafic conteneurs au T1 2025", description:"Haropa Port annonce une hausse de 8% des volumes traités sur le premier trimestre.", url:'https://www.meretmarine.com/fr/content/le-port-de-marseille-fos-record-trafic-conteneurs-t1-2025', category:'ports'},
-    {source:{name:'Le Marin'},            publishedAt:new Date(n-90*60000).toISOString(),  title:"Brittany Ferries commande deux nouveaux ferries hybrides pour la ligne Roscoff-Plymouth", url:'https://www.lemarin.fr/transport-maritime/brittany-ferries-commande-ferries-hybrides-roscoff-plymouth/', category:'armateurs'},
-    {source:{name:'Google News Maritime'},publishedAt:new Date(n-130*60000).toISOString(), title:"L'OMI adopte de nouvelles règles sur les émissions de CO₂ : impact sur les armateurs français", url:'https://news.google.com/search?q=OMI+emissions+CO2+armateurs+fran%C3%A7ais&hl=fr', category:'reglementation'},
-    {source:{name:'JMM'},                 publishedAt:new Date(n-180*60000).toISOString(), title:"Louis Dreyfus Armateurs affiche une hausse de 14% de son chiffre d'affaires", url:'https://www.jmm.fr/louis-dreyfus-armateurs-resultats-semestriels-2025/', category:'economie'},
-    {source:{name:'Mer et Marine'},        publishedAt:new Date(n-240*60000).toISOString(), title:"Chantiers de l'Atlantique : livraison du MSC World Europa II repoussée au T4", url:'https://www.meretmarine.com/fr/content/chantiers-atlantique-msc-world-europa-ii-livraison-repoussee', category:'construction'},
-    {source:{name:'Le Marin'},            publishedAt:new Date(n-310*60000).toISOString(), title:"Grève des dockers au Havre : les négociations reprennent sous l'égide du préfet", url:'https://www.lemarin.fr/social/greve-dockers-havre-negociations-prefet/', category:'ports'},
-    {source:{name:'JMM'},                 publishedAt:new Date(n-450*60000).toISOString(), title:"Le port de Dunkerque investit 400M€ dans l'extension de son terminal méthanier", url:'https://www.jmm.fr/port-dunkerque-investissement-terminal-methanier-2025/', category:'ports'},
-    {source:{name:'Mer et Marine'},        publishedAt:new Date(n-520*60000).toISOString(), title:"Bourbon Offshore restructure son activité subsea et cède trois navires à un fonds norvégien", url:'https://www.meretmarine.com/fr/content/bourbon-offshore-restructuration-subsea-cession-navires', category:'armateurs'},
-    {source:{name:'Google News Maritime'},publishedAt:new Date(n-680*60000).toISOString(), title:"Pavillon français : le RIF progresse pour la 3e année consécutive", url:'https://news.google.com/search?q=pavillon+fran%C3%A7ais+RIF+navires&hl=fr', category:'reglementation'},
+  marState.all = [
+    {source:{name:'Le Marin'},publishedAt:new Date(n-20*60000).toISOString(),title:"CMA CGM commande 12 porte-conteneurs GNL chez Fincantieri — 2,4 Md€",description:"Le groupe marseillais confirme son engagement dans la décarbonation avec cette commande évaluée à 2,4 milliards d'euros, pour livraison entre 2027 et 2029.",url:'https://www.lemarin.fr',category:'armateurs'},
+    {source:{name:'Mer et Marine'},publishedAt:new Date(n-55*60000).toISOString(),title:"Marseille-Fos : record de trafic conteneurs au T1 2025, +8% vs N-1",description:"Haropa Port enregistre une croissance inédite tirée par la montée en puissance du terminal de Fos-Distriport et du report modal ferroviaire.",url:'https://www.meretmarine.com',category:'ports'},
+    {source:{name:'Le Marin'},publishedAt:new Date(n-90*60000).toISOString(),title:"Brittany Ferries : deux ferries hybrides commandés pour Roscoff-Plymouth",url:'https://www.lemarin.fr',category:'armateurs'},
+    {source:{name:'Google News Maritime'},publishedAt:new Date(n-130*60000).toISOString(),title:"L'OMI adopte un mécanisme de tarification carbone : impact sur les armateurs français",url:'https://news.google.com/search?q=OMI+carbone+armateurs+france&hl=fr',category:'reglementation'},
+    {source:{name:'JMM'},publishedAt:new Date(n-180*60000).toISOString(),title:"Louis Dreyfus Armateurs : +14% de CA, bénéfice net en forte progression",url:'https://www.jmm.fr',category:'economie'},
+    {source:{name:'Mer et Marine'},publishedAt:new Date(n-240*60000).toISOString(),title:"Chantiers de l'Atlantique : livraison MSC World Europa II repoussée au T4 2025",url:'https://www.meretmarine.com',category:'construction'},
   ];
-  maritimeState.loaded = true;
+  marState.loaded = true;
   renderMaritime();
 }
 
-// ══════════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════════
+// ═══ INIT ════════════════════════════════════════════════
 async function init() {
-  await Promise.all([fetchMacroNews(), fetchRates(), fetchQuotes()]);
-  fetchSectorNews('private-debt');
+  await Promise.all([fetchMacro(), fetchRates(), fetchQuotes()]);
+  fetchSector('private-debt');
 }
 init();
 setInterval(init, REFRESH_MS);
