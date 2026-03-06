@@ -391,7 +391,7 @@ async function fetchRates(){
 }
 
 // ═══════════════════════════════════════════════
-// QUOTES — symboles Twelve Data free plan
+// QUOTES — Yahoo Finance via Apps Script
 // ═══════════════════════════════════════════════
 const INDICES=[{s:'CAC40',l:'CAC 40'},{s:'SPX',l:'S&P 500'},{s:'IXIC',l:'Nasdaq'},{s:'FTSE',l:'FTSE 100'},{s:'DAX',l:'DAX 40'}];
 const FX=[{s:'EUR/USD',l:'EUR/USD'},{s:'GBP/USD',l:'GBP/USD'},{s:'EUR/GBP',l:'EUR/GBP'}];
@@ -409,9 +409,13 @@ function renderIdx(data){
   $id('indices-list').innerHTML=INDICES.map(i=>{
     const q=data?.[i.s];
     if(!q||q.status==='error'||!q.close) return `<div class="d-row"><span class="d-lbl">${i.l}</span><span class="neu d-val">N/A</span></div>`;
-    const p=parseFloat(q.close||q.price||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-    const c=parseFloat(q.percent_change||0);
-    return `<div class="d-row"><span class="d-lbl">${i.l}</span><div class="d-right"><div class="d-price">${p}</div><div class="d-chg ${cls(c)}">${sgn(c)}${c.toFixed(2)}%</div></div></div>`;
+    const price = parseFloat(q.close);
+    const p = price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const c = q.percent_change != null ? parseFloat(q.percent_change) : null;
+    const chg = c != null
+      ? `<div class="d-chg ${cls(c)}">${sgn(c)}${c.toFixed(2)}%</div>`
+      : `<div class="d-chg neu">—</div>`;
+    return `<div class="d-row"><span class="d-lbl">${i.l}</span><div class="d-right"><div class="d-price">${p}</div>${chg}</div></div>`;
   }).join('');
 }
 
