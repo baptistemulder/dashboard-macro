@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Financial News Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23111110'/><text y='.9em' font-size='72' x='50%' dominant-baseline='middle' text-anchor='middle' dy='0.1em'>📈</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -167,7 +168,6 @@ a.art:hover{background:#fafaf8;}
 <!-- TABS -->
 <nav class="tabs-bar">
   <button class="tab active" onclick="switchTab('macro',this)">Macro Overview</button>
-  <button class="tab" onclick="switchTab('sector',this)">Sector News</button>
   <button class="tab" onclick="switchTab('maritime',this)">Maritime FR</button>
 </nav>
 
@@ -234,23 +234,8 @@ a.art:hover{background:#fafaf8;}
   </div>
 </div>
 
-<!-- TAB 2 — SECTOR -->
-<div id="tab-sector" class="tab-content">
-  <div class="filters">
-    <button class="f-btn active" onclick="selSector('debt',this)">Debt</button>
-    <button class="f-btn" onclick="selSector('equity',this)">Equity</button>
-    <button class="f-btn" onclick="selSector('autres',this)">Autres</button>
-  </div>
-  <div class="card">
-    <div class="card-hdr">
-      <span class="card-lbl" id="sector-label">Private Debt — Latest</span>
-      <span class="card-meta" id="sector-count">—</span>
-    </div>
-    <div id="sector-feed"><div style="padding:24px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading…</div></div>
-  </div>
-</div>
 
-<!-- TAB 3 — MARITIME -->
+<!-- TAB 2 — MARITIME -->
 <div id="tab-maritime" class="tab-content">
   <div class="filters">
     <button class="f-btn active" onclick="filterMar('all',this)">Tous</button>
@@ -459,32 +444,6 @@ async function fetchSector(sector){
   } else sectorFallback(sector);
 }
 
-const SF={
-  'debt':[
-    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-30*60000).toISOString(),title:'Ares Capital closes €2.5bn unitranche facility for European mid-market at E+475bp',description:'The deal is structured as a single-lender unitranche with a 6-year tenor and a €400m delayed-draw accordion. Leverage is set at 5.2x through the unitranche, in line with current European mid-market pricing. The transaction is among the largest direct lending mandates year-to-date.',url:'https://www.reuters.com/markets'},
-    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-110*60000).toISOString(),title:'European high-yield primary reopens with €6bn in issuance; B-rated paper prices inside 400bp',description:'Issuers returned in force following the Q1 pause. Lead managers report order books 3–5x covered across new issues, with spreads compressing to post-2021 tights. The pipeline for Q2 is estimated at €15–20bn pending macro stability.',url:'https://www.reuters.com/markets/rates-bonds'},
-    {source:{name:'MarketWatch'},publishedAt:new Date(Date.now()-200*60000).toISOString(),title:'CLO formation accelerates in Europe; managers price €4bn across six new vehicles in January',description:'European CLO issuance is tracking ahead of last year with AAA tranches pricing at E+130bp. Manager consolidation continues with the top-10 managers accounting for over 60% of new issuance.',url:'https://www.marketwatch.com'},
-    {source:{name:'CNBC'},publishedAt:new Date(Date.now()-320*60000).toISOString(),title:'Leveraged loan default rates edge up to 3.2% in Europe; distressed ratio rises to 8%',description:'Moody\'s reports a modest uptick in defaults concentrated in retail, media, and highly-leveraged healthcare credits. Recoveries are averaging 48 cents on the dollar, below the historical 60-cent mean, reflecting compressed covenant packages.',url:'https://www.cnbc.com/finance'},
-  ],
-  'equity':[
-    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-25*60000).toISOString(),title:'KKR closes €8.2bn European Fund VI above hard cap; focus on healthcare and technology buyouts',description:'The fund exceeded its €7.5bn hard cap after an 11-month fundraise. KKR targets control buyouts in Northern and Western Europe, with healthcare services and software as primary sectors. Expected hold period is 5–7 years with a target gross IRR of 20%+.',url:'https://www.reuters.com/markets'},
-    {source:{name:'CNBC'},publishedAt:new Date(Date.now()-95*60000).toISOString(),title:'European IPO pipeline builds for H1 2025 with 14 mandates at bookrunner stage',description:'Banks report the strongest pre-IPO pipeline since 2021, dominated by PE-backed healthcare, industrial technology, and energy transition companies. Bookrunners expect 8–10 transactions to reach the market before the summer, subject to equity market conditions holding above current levels.',url:'https://www.cnbc.com'},
-    {source:{name:'MarketWatch'},publishedAt:new Date(Date.now()-180*60000).toISOString(),title:'PE exit activity rises 28% YTD as sponsor-to-sponsor sales and strategics compete for assets',description:'Buyout sponsors completed $180bn in exits globally in Q1 2025. Secondary buyouts account for 42% of exit volume as strategic M&A pipelines remain active. Average exit multiple is 11.4x EBITDA, down from 13.1x at the 2021 peak but recovering from 2023 lows.',url:'https://www.marketwatch.com'},
-    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-290*60000).toISOString(),title:'Vivendi completes Canal+ demerger; three entities now trading as independent listed companies',description:'Canal+ listed on the London Stock Exchange at £2.8bn market cap, implying a 6.2x EV/EBITDA multiple — a modest discount to peers. The demerger completes a two-year restructuring process and releases value locked in a conglomerate structure.',url:'https://www.reuters.com/markets/deals'},
-  ],
-  'autres':[
-    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-40*60000).toISOString(),title:'German Bund yields surge 30bp after €500bn fiscal package; OAT-Bund spread narrows to 65bp',description:'The constitutional amendment unlocking €500bn in off-budget spending triggered the largest single-session move in Bund futures since 2022. The 10Y Bund now yields 2.85%, reshaping relative value across European fixed income. Swap spreads tightened sharply as supply expectations were revised upward.',url:'https://www.reuters.com/markets/rates-bonds'},
-    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-130*60000).toISOString(),title:'Brookfield Infrastructure targets $25bn for flagship Fund V; energy transition and data centres in focus',description:'The fund pursues core-plus infrastructure equity across OECD markets, targeting 10–12% net IRR. First close is expected at $10bn mid-year. Digital infrastructure and energy transition account for over 50% of the target portfolio allocation.',url:'https://www.reuters.com/markets'},
-    {source:{name:'CNBC'},publishedAt:new Date(Date.now()-220*60000).toISOString(),title:'European logistics real estate yields stabilise at 4.75%; transaction volumes up 18% QoQ',description:'Core logistics assets across Germany, France and the Netherlands are attracting strong institutional demand as valuations appear to have bottomed. Prime vacancy is below 4% in key markets. Some managers are beginning to re-mark portfolios upward for the first time since H2 2022.',url:'https://www.cnbc.com'},
-    {source:{name:'MarketWatch'},publishedAt:new Date(Date.now()-350*60000).toISOString(),title:'Global credit spreads at post-2021 tights; strategists warn buffer against macro shock is thin',description:'IG spreads at 88bp and European HY at 315bp leave limited margin for error. Strategists note the current pricing assumes a benign default environment and no significant rates repricing — both of which are vulnerable to an inflation surprise or a growth shock.',url:'https://www.marketwatch.com'},
-  ],
-};
-
-function sectorFallback(sector){
-  renderFeed(SF[sector]||[],'sector-feed');
-  $set('sector-count',(SF[sector]?.length||0)+' articles (demo)');
-}
-
 // ═══════════════════════════════════════════════
 // MARITIME
 // ═══════════════════════════════════════════════
@@ -536,14 +495,13 @@ function renderMaritime(){
 function maritimeFallback(){
   const n=Date.now();
   marState.all=[
-    {source:{name:'Le Marin'},publishedAt:new Date(n-20*60000).toISOString(),title:"CMA CGM commande 12 porte-conteneurs GNL chez Fincantieri pour 2,4 Md€",description:"Le groupe marseillais confirme sa stratégie de décarbonation avec cette commande de navires de 15 000 EVP propulsés au GNL, pour livraison entre 2027 et 2029. Le financement est assuré via un crédit-bail naval structuré en partenariat avec BNP Paribas et Société Générale.",url:'https://www.lemarin.fr',urlToImage:'',category:'armateurs'},
-    {source:{name:'Mer et Marine'},publishedAt:new Date(n-55*60000).toISOString(),title:"Marseille-Fos : record de trafic conteneurs au T1 2025, en hausse de 8% sur un an",description:"Le Grand Port Maritime de Marseille enregistre une performance historique tirée par la montée en puissance du terminal Fos-Distriport et du report modal ferroviaire. La croissance est également soutenue par les nouvelles lignes d'armateurs asiatiques.",url:'https://www.meretmarine.com',urlToImage:'',category:'ports'},
-    {source:{name:'Le Marin'},publishedAt:new Date(n-90*60000).toISOString(),title:"Bourbon Marine lève 300M€ via une émission obligataire pour refinancer sa flotte subsea",description:"Le groupe spécialisé dans les services offshore a réalisé une émission obligataire à 5 ans avec un coupon de 6,75%, destinée au refinancement de sa dette existante et à l'acquisition de deux nouveaux navires de support sous-marin.",url:'https://www.lemarin.fr',urlToImage:'',category:'finance'},
-    {source:{name:'JMM'},publishedAt:new Date(n-130*60000).toISOString(),title:"L'OMI adopte un mécanisme de tarification carbone maritime à partir de 2027",description:"L'Organisation Maritime Internationale a validé un mécanisme de contribution basé sur l'intensité carbone des navires. Les armateurs français devront adapter leur stratégie de financement pour intégrer ce coût carbone estimé entre 15 et 40 USD par tonne de CO₂.",url:'https://www.jmm.fr',urlToImage:'',category:'reglementation'},
-    {source:{name:'Le Marin'},publishedAt:new Date(n-180*60000).toISOString(),title:"Louis Dreyfus Armateurs : résultats semestriels en hausse, dette nette réduite de 12%",description:"Le groupe affiche un EBITDA en progression de 18% et annonce la réduction de son levier financier grâce aux flux de trésorerie générés par ses activités de vrac sec et de câbliers. La direction maintient ses prévisions pour l'exercice 2025.",url:'https://www.lemarin.fr',urlToImage:'',category:'economie'},
-    {source:{name:'Mer et Marine'},publishedAt:new Date(n-240*60000).toISOString(),title:"Chantiers de l'Atlantique obtient un financement BEI de 400M€ pour sa division hydrogène",description:"La Banque Européenne d'Investissement accorde un prêt à long terme aux Chantiers de l'Atlantique pour développer sa capacité de production de composants pour navires à propulsion hydrogène et à propulsion GNL.",url:'https://www.meretmarine.com',urlToImage:'',category:'construction'},
-    {source:{name:'Google News Maritime'},publishedAt:new Date(n-310*60000).toISOString(),title:"Brittany Ferries lève 250M€ pour financer deux ferries hybrides Roscoff-Plymouth",description:"Le financement est structuré sous forme de crédit-export avec garantie SACE et BPI France, complété par des obligations vertes. Les nouveaux navires entreront en service en 2026 et réduiront les émissions CO₂ de la ligne de 40%.",url:'https://news.google.com/search?q=Brittany+Ferries+financement+ferry+hybride&hl=fr',urlToImage:'',category:'finance'},
-    {source:{name:'JMM'},publishedAt:new Date(n-400*60000).toISOString(),title:"Port de Dunkerque : émission de 200M€ d'obligations vertes pour l'extension du terminal GNL",description:"Le Grand Port Maritime de Dunkerque a réalisé avec succès une émission obligataire green bond à 15 ans, sursouscrite 4,2x. Les fonds financeront l'extension du terminal méthanier et l'installation de bornes d'avitaillement GNL pour la flotte de courte mer.",url:'https://www.jmm.fr',urlToImage:'',category:'ports'},
+    {source:{name:'Le Marin'},publishedAt:new Date(n-20*60000).toISOString(),title:"CMA CGM commande 12 porte-conteneurs GNL chez Fincantieri pour 2,4 Md€",description:"Le groupe marseillais confirme sa stratégie de décarbonation avec cette commande de navires de 15 000 EVP propulsés au GNL, pour livraison entre 2027 et 2029. Le financement est assuré via un crédit-bail naval structuré en partenariat avec BNP Paribas et Société Générale.",url:'https://www.lemarin.fr',urlToImage:'https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=800&q=80',category:'armateurs'},
+    {source:{name:'Mer et Marine'},publishedAt:new Date(n-55*60000).toISOString(),title:"Marseille-Fos : record de trafic conteneurs au T1 2025, en hausse de 8% sur un an",description:"Le Grand Port Maritime de Marseille enregistre une performance historique tirée par la montée en puissance du terminal Fos-Distriport et du report modal ferroviaire. La croissance est également soutenue par les nouvelles lignes d'armateurs asiatiques.",url:'https://www.meretmarine.com',urlToImage:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',category:'ports'},
+    {source:{name:'Le Marin'},publishedAt:new Date(n-90*60000).toISOString(),title:"Bourbon Marine lève 300M€ via une émission obligataire pour refinancer sa flotte subsea",description:"Le groupe spécialisé dans les services offshore a réalisé une émission obligataire à 5 ans avec un coupon de 6,75%, destinée au refinancement de sa dette existante et à l'acquisition de deux nouveaux navires de support sous-marin.",url:'https://www.lemarin.fr',urlToImage:'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=800&q=80',category:'finance'},
+    {source:{name:'JMM'},publishedAt:new Date(n-130*60000).toISOString(),title:"L'OMI adopte un mécanisme de tarification carbone maritime à partir de 2027",description:"L'Organisation Maritime Internationale a validé un mécanisme de contribution basé sur l'intensité carbone des navires. Les armateurs français devront adapter leur stratégie de financement pour intégrer ce coût carbone estimé entre 15 et 40 USD par tonne de CO₂.",url:'https://www.jmm.fr',urlToImage:'https://images.unsplash.com/photo-1605745341112-85968b19335b?w=800&q=80',category:'reglementation'},
+    {source:{name:'Le Marin'},publishedAt:new Date(n-180*60000).toISOString(),title:"Louis Dreyfus Armateurs : résultats semestriels en hausse, dette nette réduite de 12%",description:"Le groupe affiche un EBITDA en progression de 18% et annonce la réduction de son levier financier grâce aux flux de trésorerie générés par ses activités de vrac sec et de câbliers. La direction maintient ses prévisions pour l'exercice 2025.",url:'https://www.lemarin.fr',urlToImage:'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800&q=80',category:'economie'},
+    {source:{name:'Mer et Marine'},publishedAt:new Date(n-240*60000).toISOString(),title:"Chantiers de l'Atlantique obtient un financement BEI de 400M€ pour sa division hydrogène",description:"La Banque Européenne d'Investissement accorde un prêt à long terme aux Chantiers de l'Atlantique pour développer sa capacité de production de composants pour navires à propulsion hydrogène et à propulsion GNL.",url:'https://www.meretmarine.com',urlToImage:'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=800&q=80',category:'construction'},
+    {source:{name:'JMM'},publishedAt:new Date(n-400*60000).toISOString(),title:"Port de Dunkerque : émission de 200M€ d'obligations vertes pour l'extension du terminal GNL",description:"Le Grand Port Maritime de Dunkerque a réalisé avec succès une émission obligataire green bond à 15 ans, sursouscrite 4,2x. Les fonds financeront l'extension du terminal méthanier et l'installation de bornes d'avitaillement GNL pour la flotte de courte mer.",url:'https://www.jmm.fr',urlToImage:'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&q=80',category:'ports'},
   ];
   marState.loaded=true;
   renderMaritime();
@@ -554,7 +512,6 @@ function maritimeFallback(){
 // ═══════════════════════════════════════════════
 async function init(){
   await Promise.all([fetchMacro(), fetchRates(), fetchQuotes()]);
-  fetchSector('debt');
 }
 init();
 setInterval(init, REFRESH_MS);
