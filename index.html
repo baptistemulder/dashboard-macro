@@ -237,14 +237,9 @@ a.art:hover{background:#fafaf8;}
 <!-- TAB 2 — SECTOR -->
 <div id="tab-sector" class="tab-content">
   <div class="filters">
-    <button class="f-btn active" onclick="selSector('private-debt',this)">Private Debt</button>
-    <button class="f-btn" onclick="selSector('ma',this)">M&amp;A</button>
-    <button class="f-btn" onclick="selSector('private-equity',this)">Private Equity</button>
-    <button class="f-btn" onclick="selSector('real-estate',this)">Real Estate</button>
-    <button class="f-btn" onclick="selSector('credit',this)">Credit Markets</button>
-    <button class="f-btn" onclick="selSector('ipo',this)">IPO / ECM</button>
-    <button class="f-btn" onclick="selSector('infrastructure',this)">Infrastructure</button>
-    <button class="f-btn" onclick="selSector('rates',this)">Fixed Income</button>
+    <button class="f-btn active" onclick="selSector('debt',this)">Debt</button>
+    <button class="f-btn" onclick="selSector('equity',this)">Equity</button>
+    <button class="f-btn" onclick="selSector('autres',this)">Autres</button>
   </div>
   <div class="card">
     <div class="card-hdr">
@@ -465,20 +460,24 @@ async function fetchSector(sector){
 }
 
 const SF={
-  'private-debt':[
-    {source:{name:'Private Debt Investor'},publishedAt:new Date(Date.now()-30*60000).toISOString(),title:'Ares Capital closes €2.5bn direct lending mandate for European mid-market borrowers',description:'The transaction is structured as a unitranche facility at E+475bp with a 6-year tenor and includes a €400m accordion. The deal is among the largest single-lender mid-market mandates in Europe year-to-date.',url:'https://www.privatedebtinvestor.com'},
-    {source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-110*60000).toISOString(),title:'Apollo raises €4bn for European private credit fund targeting infrastructure debt',description:'Fund V targets senior secured infrastructure credit across Western Europe with a focus on digital infrastructure and energy transition assets at a target yield of 7–9% gross IRR.',url:'https://www.bloomberg.com/markets'},
+  'debt':[
+    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-30*60000).toISOString(),title:'Ares Capital closes €2.5bn unitranche facility for European mid-market at E+475bp',description:'The deal is structured as a single-lender unitranche with a 6-year tenor and a €400m delayed-draw accordion. Leverage is set at 5.2x through the unitranche, in line with current European mid-market pricing. The transaction is among the largest direct lending mandates year-to-date.',url:'https://www.reuters.com/markets'},
+    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-110*60000).toISOString(),title:'European high-yield primary reopens with €6bn in issuance; B-rated paper prices inside 400bp',description:'Issuers returned in force following the Q1 pause. Lead managers report order books 3–5x covered across new issues, with spreads compressing to post-2021 tights. The pipeline for Q2 is estimated at €15–20bn pending macro stability.',url:'https://www.reuters.com/markets/rates-bonds'},
+    {source:{name:'MarketWatch'},publishedAt:new Date(Date.now()-200*60000).toISOString(),title:'CLO formation accelerates in Europe; managers price €4bn across six new vehicles in January',description:'European CLO issuance is tracking ahead of last year with AAA tranches pricing at E+130bp. Manager consolidation continues with the top-10 managers accounting for over 60% of new issuance.',url:'https://www.marketwatch.com'},
+    {source:{name:'CNBC'},publishedAt:new Date(Date.now()-320*60000).toISOString(),title:'Leveraged loan default rates edge up to 3.2% in Europe; distressed ratio rises to 8%',description:'Moody\'s reports a modest uptick in defaults concentrated in retail, media, and highly-leveraged healthcare credits. Recoveries are averaging 48 cents on the dollar, below the historical 60-cent mean, reflecting compressed covenant packages.',url:'https://www.cnbc.com/finance'},
   ],
-  'ma':[
-    {source:{name:'Financial Times'},publishedAt:new Date(Date.now()-45*60000).toISOString(),title:'Vivendi completes Canal+ demerger; three separate listed entities now trading independently',description:'The strategic separation unlocks value across the media conglomerate following a two-year restructuring process. Canal+ listed on the London Stock Exchange with a market cap of £2.8bn at a 6.2x EV/EBITDA multiple.',url:'https://www.ft.com/ma'},
-    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-150*60000).toISOString(),title:'Global M&A volumes up 22% YTD driven by PE sponsor activity and cross-border strategic deals',description:'Dealogic data shows $620bn in announced transactions in Q1 2025, with financial sponsors accounting for 38% of volume. Technology, healthcare and energy transitions dominate the strategic pipeline.',url:'https://www.reuters.com/markets/deals'},
+  'equity':[
+    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-25*60000).toISOString(),title:'KKR closes €8.2bn European Fund VI above hard cap; focus on healthcare and technology buyouts',description:'The fund exceeded its €7.5bn hard cap after an 11-month fundraise. KKR targets control buyouts in Northern and Western Europe, with healthcare services and software as primary sectors. Expected hold period is 5–7 years with a target gross IRR of 20%+.',url:'https://www.reuters.com/markets'},
+    {source:{name:'CNBC'},publishedAt:new Date(Date.now()-95*60000).toISOString(),title:'European IPO pipeline builds for H1 2025 with 14 mandates at bookrunner stage',description:'Banks report the strongest pre-IPO pipeline since 2021, dominated by PE-backed healthcare, industrial technology, and energy transition companies. Bookrunners expect 8–10 transactions to reach the market before the summer, subject to equity market conditions holding above current levels.',url:'https://www.cnbc.com'},
+    {source:{name:'MarketWatch'},publishedAt:new Date(Date.now()-180*60000).toISOString(),title:'PE exit activity rises 28% YTD as sponsor-to-sponsor sales and strategics compete for assets',description:'Buyout sponsors completed $180bn in exits globally in Q1 2025. Secondary buyouts account for 42% of exit volume as strategic M&A pipelines remain active. Average exit multiple is 11.4x EBITDA, down from 13.1x at the 2021 peak but recovering from 2023 lows.',url:'https://www.marketwatch.com'},
+    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-290*60000).toISOString(),title:'Vivendi completes Canal+ demerger; three entities now trading as independent listed companies',description:'Canal+ listed on the London Stock Exchange at £2.8bn market cap, implying a 6.2x EV/EBITDA multiple — a modest discount to peers. The demerger completes a two-year restructuring process and releases value locked in a conglomerate structure.',url:'https://www.reuters.com/markets/deals'},
   ],
-  'private-equity':[{source:{name:'PE News'},publishedAt:new Date(Date.now()-25*60000).toISOString(),title:'KKR closes €8.2bn European Fund VI above hard cap; healthcare and technology key targets',description:'The fund exceeded its €7.5bn hard cap and will pursue control buyouts in Northern and Western Europe. Key sectors include healthcare services, software and industrial technology. Average hold period target is 5–7 years.',url:'https://www.penews.com'}],
-  'real-estate':[{source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-55*60000).toISOString(),title:'European logistics real estate valuations bottom out as prime yields stabilise at 4.75%',description:'Transaction volumes rose 18% QoQ in Q4 2024 as institutional buyers returned at stabilised yields. Core logistics assets in Germany, France and the Netherlands are attracting the strongest demand, with vacancy below 4%.',url:'https://www.bloomberg.com/real-estate'}],
-  'credit':[{source:{name:'Reuters'},publishedAt:new Date(Date.now()-40*60000).toISOString(),title:'European high-yield primary reopens with €6bn in January issuance as spreads compress to 315bp',description:'Issuers returned to the European high-yield market at compressed spreads, with B-rated paper pricing inside 400bp for the first time since 2021. The strong demand reflects excess liquidity chasing limited supply.',url:'https://www.reuters.com/markets/rates-bonds'}],
-  'ipo':[{source:{name:'Financial Times'},publishedAt:new Date(Date.now()-65*60000).toISOString(),title:'European IPO pipeline builds for H1 2025 with 12 confirmed mandates at bookrunner stage',description:'Banks report a strong mandate pipeline concentrated in healthcare, industrials and PE-backed exits seeking liquidity after a two-year pause. Valuations are expected at 10–15% discounts to sector peers to ensure aftermarket support.',url:'https://www.ft.com/ipo'}],
-  'infrastructure':[{source:{name:'Infrastructure Investor'},publishedAt:new Date(Date.now()-50*60000).toISOString(),title:'Brookfield Infrastructure targets $25bn for flagship Fund V; first close expected Q2 2025',description:'The fund focuses on data centres, midstream energy and transport across OECD markets. Core-plus infrastructure strategy targeting 10–12% net IRR. First close expected at $10bn by mid-year with strong LP re-up rates.',url:'https://www.infrastructureinvestor.com'}],
-  'rates':[{source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-35*60000).toISOString(),title:'German Bund yields surge 30bp after fiscal package; OAT-Bund spread narrows to 65bp',description:'The historic German fiscal expansion triggered the sharpest single-week move in Bund yields since 2022, forcing a repricing of the entire European rates complex. The 10Y Bund now yields 2.85%, challenging relative value assumptions across IG credit.',url:'https://www.bloomberg.com/markets/rates-bonds'}],
+  'autres':[
+    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-40*60000).toISOString(),title:'German Bund yields surge 30bp after €500bn fiscal package; OAT-Bund spread narrows to 65bp',description:'The constitutional amendment unlocking €500bn in off-budget spending triggered the largest single-session move in Bund futures since 2022. The 10Y Bund now yields 2.85%, reshaping relative value across European fixed income. Swap spreads tightened sharply as supply expectations were revised upward.',url:'https://www.reuters.com/markets/rates-bonds'},
+    {source:{name:'Reuters'},publishedAt:new Date(Date.now()-130*60000).toISOString(),title:'Brookfield Infrastructure targets $25bn for flagship Fund V; energy transition and data centres in focus',description:'The fund pursues core-plus infrastructure equity across OECD markets, targeting 10–12% net IRR. First close is expected at $10bn mid-year. Digital infrastructure and energy transition account for over 50% of the target portfolio allocation.',url:'https://www.reuters.com/markets'},
+    {source:{name:'CNBC'},publishedAt:new Date(Date.now()-220*60000).toISOString(),title:'European logistics real estate yields stabilise at 4.75%; transaction volumes up 18% QoQ',description:'Core logistics assets across Germany, France and the Netherlands are attracting strong institutional demand as valuations appear to have bottomed. Prime vacancy is below 4% in key markets. Some managers are beginning to re-mark portfolios upward for the first time since H2 2022.',url:'https://www.cnbc.com'},
+    {source:{name:'MarketWatch'},publishedAt:new Date(Date.now()-350*60000).toISOString(),title:'Global credit spreads at post-2021 tights; strategists warn buffer against macro shock is thin',description:'IG spreads at 88bp and European HY at 315bp leave limited margin for error. Strategists note the current pricing assumes a benign default environment and no significant rates repricing — both of which are vulnerable to an inflation surprise or a growth shock.',url:'https://www.marketwatch.com'},
+  ],
 };
 
 function sectorFallback(sector){
@@ -555,7 +554,7 @@ function maritimeFallback(){
 // ═══════════════════════════════════════════════
 async function init(){
   await Promise.all([fetchMacro(), fetchRates(), fetchQuotes()]);
-  fetchSector('private-debt');
+  fetchSector('debt');
 }
 init();
 setInterval(init, REFRESH_MS);
