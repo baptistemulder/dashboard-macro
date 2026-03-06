@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Market Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:        #f5f6f8;
+    --white:     #ffffff;
+    --border:    #e4e6ea;
+    --border-2:  #eff0f2;
+    --text:      #111318;
+    --text2:     #5a5e6b;
+    --text3:     #9ba0ad;
+    --green:     #16a34a;
+    --red:       #dc2626;
+    --accent-bg: #f0fdf4;
+    --accent-bd: #bbf7d0;
+    --tag-bg:    #f1f2f5;
+    --font:      'Inter', system-ui, sans-serif;
+    --mono:      'IBM Plex Mono', monospace;
+    --radius:    6px;
+    --shadow:    0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font); font-size:14px; line-height:1.5; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background:var(--white); border-bottom:1px solid var(--border);
+    padding:0 24px; height:52px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:200;
+  }
+  .topbar-left { display:flex; align-items:center; gap:16px; }
+  .topbar-title { font-size:15px; font-weight:600; letter-spacing:-.2px; }
+  .badge {
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:11px; font-weight:500; padding:2px 8px; border-radius:20px;
+    background:var(--accent-bg); color:var(--green); border:1px solid var(--accent-bd);
+  }
+  .badge-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:blink 2.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .topbar-right { display:flex; align-items:center; gap:10px; }
+  .btn {
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12px; font-weight:500;
+    padding:5px 12px; border-radius:var(--radius);
+    border:1px solid var(--border); background:var(--white);
+    color:var(--text2); cursor:pointer; transition:all .12s;
+  }
+  .btn:hover { background:var(--bg); color:var(--text); }
+  .clock { font-family:var(--mono); font-size:12px; color:var(--text3); }
+
+  /* ── TABS ── */
+  .tabs-bar {
+    background:var(--white); border-bottom:1px solid var(--border);
+    padding:0 24px; display:flex; align-items:flex-end;
+  }
+  .tab {
+    font-size:13px; font-weight:500; color:var(--text2);
+    padding:12px 16px 11px; border:none; background:none; cursor:pointer;
+    border-bottom:2px solid transparent; transition:all .12s; line-height:1;
+  }
+  .tab:hover { color:var(--text); }
+  .tab.active { color:var(--text); border-bottom-color:var(--text); }
+
+  /* ── MAIN ── */
+  .main { padding:20px 24px; max-width:1480px; margin:0 auto; }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  /* ── BANNER ── */
+  .banner {
+    background:#fffbeb; border:1px solid #fcd34d; border-radius:var(--radius);
+    padding:8px 14px; font-size:12px; color:#92400e;
+    margin-bottom:16px; display:flex; align-items:center; gap:8px;
+  }
+  .banner code { background:rgba(0,0,0,.06); padding:1px 5px; border-radius:3px; font-family:var(--mono); font-size:11px; }
+
+  /* ── MACRO GRID ── */
+  .macro-grid {
+    display:flex; flex-direction:row; gap:20px;
+    align-items:flex-start; width:100%;
+  }
+  .macro-grid .news-card { flex:1 1 0%; min-width:0; }
+  .macro-grid .sidebar   { flex:0 0 272px; width:272px; position:sticky; top:88px; align-self:flex-start; }
+
+  /* ── NEWS CARD ── */
+  .news-card {
+    background:var(--white); border:1px solid var(--border);
+    border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
+  }
+  .news-card-header {
+    padding:10px 16px; border-bottom:1px solid var(--border-2);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .news-card-title { font-size:11px; font-weight:600; letter-spacing:.6px; text-transform:uppercase; color:var(--text3); }
+  .news-count { font-size:11px; color:var(--text3); font-family:var(--mono); }
+
+  a.news-row {
+    display:block; padding:14px 16px;
+    border-bottom:1px solid var(--border-2);
+    text-decoration:none; color:inherit; transition:background .1s;
+  }
+  a.news-row:last-child { border-bottom:none; }
+  a.news-row:hover { background:#fafafa; }
+  .news-row-headline { font-size:14px; font-weight:600; color:var(--text); line-height:1.4; }
+  .news-row-headline.lead { font-size:16px; font-weight:700; line-height:1.35; margin-bottom:5px; }
+  .news-row-desc { font-size:12px; font-weight:400; color:var(--text2); line-height:1.55; margin-top:4px; }
+  .news-row-meta { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text3); margin-top:5px; }
+  .dot-sep { color:var(--border-2); }
+
+  /* ── SIDEBAR ── */
+  .sidebar { display:flex; flex-direction:column; gap:12px; }
+  .s-block { background:var(--white); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+  .s-head  { padding:8px 14px; border-bottom:1px solid var(--border-2); }
+  .s-title { font-size:10px; font-weight:600; letter-spacing:.7px; text-transform:uppercase; color:var(--text3); }
+  .s-body  { padding:4px 0; }
+  .s-row   { display:flex; justify-content:space-between; align-items:center; padding:7px 14px; border-bottom:1px solid var(--border-2); font-size:12px; }
+  .s-row:last-child { border-bottom:none; }
+  .s-label { color:var(--text2); font-weight:400; }
+  .s-val   { font-family:var(--mono); font-size:12px; font-weight:500; color:var(--text); }
+  .s-right { text-align:right; }
+  .s-price { font-family:var(--mono); font-size:12px; color:var(--text); }
+  .s-chg   { font-family:var(--mono); font-size:11px; }
+  .up   { color:var(--green); }
+  .down { color:var(--red); }
+  .neu  { color:var(--text3); }
+  .refresh-note { font-family:var(--mono); font-size:10px; color:var(--text3); text-align:right; padding-top:4px; }
+
+  /* ── FILTERS ── */
+  .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .filter-btn {
+    font-size:12px; font-weight:500;
+    padding:5px 13px; border-radius:20px;
+    border:1px solid var(--border); background:var(--white);
+    color:var(--text2); cursor:pointer; transition:all .12s;
+  }
+  .filter-btn:hover { border-color:var(--text2); color:var(--text); }
+  .filter-btn.active { background:var(--text); border-color:var(--text); color:#fff; }
+
+  /* ── SECTOR GRID ── */
+  .sector-grid { display:grid; grid-template-columns:1fr 340px; gap:20px; align-items:start; }
+
+  a.deal-row {
+    display:block; padding:11px 16px;
+    border-bottom:1px solid var(--border-2);
+    text-decoration:none; color:inherit; transition:background .1s;
+  }
+  a.deal-row:last-of-type { border-bottom:none; }
+  a.deal-row:hover { background:#fafafa; }
+  .deal-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:5px; line-height:1.4; }
+  .deal-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .deal-size { font-family:var(--mono); font-size:12px; font-weight:500; }
+  .deal-type { font-size:11px; color:var(--text3); }
+  .pill { font-size:10px; font-weight:600; letter-spacing:.4px; padding:2px 8px; border-radius:20px; margin-left:auto; }
+  .p-green  { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
+  .p-blue   { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+  .p-orange { background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; }
+  .p-gray   { background:var(--tag-bg); color:var(--text3); border:1px solid var(--border); }
+  .demo-note { font-size:10px; color:var(--text3); font-family:var(--mono); padding:10px 16px; }
+
+  /* ── MARITIME ── */
+  .source-pill {
+    font-size:11px; font-weight:500; font-family:var(--mono);
+    padding:3px 10px; border-radius:20px; cursor:pointer;
+    border:1px solid var(--border); background:var(--white);
+    color:var(--text3); transition:all .12s; user-select:none;
+  }
+  .source-pill.active { background:var(--accent-bg); border-color:var(--accent-bd); color:var(--green); }
+  .cat-tag {
+    display:inline-block; font-size:9px; font-weight:600; letter-spacing:.5px;
+    text-transform:uppercase; padding:1px 7px; border-radius:20px; margin-left:6px;
+    vertical-align:middle; background:var(--tag-bg); color:var(--text3);
+  }
+  .cat-armateurs      { background:#eff6ff; color:#1d4ed8; }
+  .cat-ports          { background:#f0fdf4; color:#15803d; }
+  .cat-construction   { background:#fff7ed; color:#c2410c; }
+  .cat-reglementation { background:#fdf4ff; color:#7e22ce; }
+  .cat-economie       { background:#fefce8; color:#854d0e; }
+
+  /* ── SKELETON ── */
+  .sk {
+    display:inline-block; border-radius:3px;
+    background:linear-gradient(90deg,var(--border) 25%,var(--border-2) 50%,var(--border) 75%);
+    background-size:200% 100%; animation:sh 1.4s infinite;
+  }
+  @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  @media(max-width:1024px) {
+    .macro-grid { flex-direction:column; }
+    .macro-grid .sidebar { position:static; width:100%; flex:none; }
+    .sector-grid { grid-template-columns:1fr; }
+  }
+  @media(max-width:640px) {
+    .main { padding:12px 16px; }
+    .topbar, .tabs-bar { padding:0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-title">Market Dashboard</span>
+    <span class="badge"><span class="badge-dot"></span>Live</span>
+  </div>
+  <div class="topbar-right">
+    <span class="clock" id="clock">—</span>
+    <button class="btn" onclick="init()">↻ Refresh</button>
+  </div>
+</header>
+
+<!-- ── TABS ── -->
+<nav class="tabs-bar">
+  <button class="tab active" onclick="switchTab('macro',this)">Macro Overview</button>
+  <button class="tab" onclick="switchTab('sector',this)">Sector News</button>
+  <button class="tab" onclick="switchTab('maritime',this)">Maritime FR</button>
+</nav>
+
+<main class="main">
+
+<!-- ════════════════════ TAB 1 — MACRO ════════════════════ -->
+<div id="tab-macro" class="tab-content active">
+  <div class="banner" id="macro-banner">
+    ⚙ Colle l'URL de ton Apps Script dans <code>SCRIPT_URL</code> en bas de ce fichier pour activer les données live.
+  </div>
+  <div class="macro-grid">
+
+    <!-- News feed -->
+    <div class="news-card">
+      <div class="news-card-header">
+        <span class="news-card-title">Macro &amp; Markets</span>
+        <span class="news-count" id="macro-count">—</span>
+      </div>
+      <div id="macro-news">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border-2);">
+          <div class="sk" style="width:85%;height:16px;margin-bottom:8px;"></div>
+          <div class="sk" style="width:65%;height:12px;margin-bottom:4px;"></div>
+          <div class="sk" style="width:52%;height:12px;margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;"><span class="sk" style="width:60px;height:10px;"></span><span class="sk" style="width:40px;height:10px;"></span></div>
+        </div>
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border-2);">
+          <div class="sk" style="width:78%;height:14px;margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;"><span class="sk" style="width:55px;height:10px;"></span><span class="sk" style="width:40px;height:10px;"></span></div>
+        </div>
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border-2);">
+          <div class="sk" style="width:82%;height:14px;margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;"><span class="sk" style="width:60px;height:10px;"></span><span class="sk" style="width:40px;height:10px;"></span></div>
+        </div>
+        <div style="padding:14px 16px;">
+          <div class="sk" style="width:72%;height:14px;margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;"><span class="sk" style="width:50px;height:10px;"></span><span class="sk" style="width:40px;height:10px;"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+      <div class="s-block">
+        <div class="s-head"><span class="s-title">Central Bank Rates</span></div>
+        <div class="s-body">
+          <div class="s-row"><span class="s-label">ECB Deposit</span><span class="s-val" id="ecb-rate"><span class="sk" style="width:36px;height:12px;"></span></span></div>
+          <div class="s-row"><span class="s-label">Fed Funds (upper)</span><span class="s-val" id="fed-rate"><span class="sk" style="width:36px;height:12px;"></span></span></div>
+          <div class="s-row"><span class="s-label">US 10Y</span><span class="s-val" id="us10y"><span class="sk" style="width:36px;height:12px;"></span></span></div>
+          <div class="s-row"><span class="s-label">DE 10Y Bund</span><span class="s-val" id="eur10y"><span class="sk" style="width:36px;height:12px;"></span></span></div>
+        </div>
+      </div>
+
+      <div class="s-block">
+        <div class="s-head"><span class="s-title">Equity Indices</span></div>
+        <div class="s-body" id="indices-list">
+          <div class="s-row"><span class="sk" style="width:64px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="s-row"><span class="sk" style="width:54px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="s-row"><span class="sk" style="width:70px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="s-row"><span class="sk" style="width:60px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="s-row"><span class="sk" style="width:50px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+        </div>
+      </div>
+
+      <div class="s-block">
+        <div class="s-head"><span class="s-title">Forex</span></div>
+        <div class="s-body" id="fx-list">
+          <div class="s-row"><span class="sk" style="width:55px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="s-row"><span class="sk" style="width:55px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+          <div class="s-row"><span class="sk" style="width:55px;height:11px;"></span><div><div class="sk" style="width:54px;height:11px;margin-bottom:3px;"></div><div class="sk" style="width:36px;height:10px;"></div></div></div>
+        </div>
+      </div>
+
+      <div class="s-block">
+        <div class="s-head"><span class="s-title">EUR Swap Rates (IRS Mid)</span></div>
+        <div class="s-body">
+          <div class="s-row"><span class="s-label">3Y</span><span class="s-val" id="swap-3y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
+          <div class="s-row"><span class="s-label">4Y</span><span class="s-val" id="swap-4y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
+          <div class="s-row"><span class="s-label">5Y</span><span class="s-val" id="swap-5y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
+          <div class="s-row"><span class="s-label">6Y</span><span class="s-val" id="swap-6y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
+          <div class="s-row"><span class="s-label">7Y</span><span class="s-val" id="swap-7y"><span class="sk" style="width:44px;height:12px;"></span></span></div>
+        </div>
+      </div>
+
+      <div class="refresh-note" id="refresh-note">—</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════ TAB 2 — SECTOR ════════════════════ -->
+<div id="tab-sector" class="tab-content">
+  <div class="filters">
+    <button class="filter-btn active" onclick="selectSector('private-debt',this)">Private Debt</button>
+    <button class="filter-btn" onclick="selectSector('ma',this)">M&amp;A</button>
+    <button class="filter-btn" onclick="selectSector('private-equity',this)">Private Equity</button>
+    <button class="filter-btn" onclick="selectSector('real-estate',this)">Real Estate</button>
+    <button class="filter-btn" onclick="selectSector('credit',this)">Credit Markets</button>
+    <button class="filter-btn" onclick="selectSector('ipo',this)">IPO / ECM</button>
+    <button class="filter-btn" onclick="selectSector('infrastructure',this)">Infrastructure</button>
+    <button class="filter-btn" onclick="selectSector('rates',this)">Fixed Income</button>
+  </div>
+  <div class="sector-grid">
+    <div class="news-card">
+      <div class="news-card-header">
+        <span class="news-card-title" id="sector-title">Private Debt — Latest</span>
+        <span class="news-count" id="sector-count">—</span>
+      </div>
+      <div id="sector-news"><div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading...</div></div>
+    </div>
+    <div class="news-card">
+      <div class="news-card-header">
+        <span class="news-card-title" id="deal-title">Deal Flow — Private Debt</span>
+      </div>
+      <div id="deal-tracker"><div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ TAB 3 — MARITIME ════════════════════ -->
+<div id="tab-maritime" class="tab-content">
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterMaritime('all',this)">Tous</button>
+    <button class="filter-btn" onclick="filterMaritime('armateurs',this)">Armateurs / Shipping</button>
+    <button class="filter-btn" onclick="filterMaritime('ports',this)">Ports &amp; Logistique</button>
+    <button class="filter-btn" onclick="filterMaritime('construction',this)">Construction navale</button>
+    <button class="filter-btn" onclick="filterMaritime('reglementation',this)">Réglementation / IMO</button>
+    <button class="filter-btn" onclick="filterMaritime('economie',this)">Économie maritime</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+    <span style="font-size:11px;color:var(--text3);font-family:var(--mono);">Sources :</span>
+    <span class="source-pill active" onclick="toggleSource('Le Marin',this)">Le Marin</span>
+    <span class="source-pill active" onclick="toggleSource('Mer et Marine',this)">Mer et Marine</span>
+    <span class="source-pill active" onclick="toggleSource('JMM',this)">JMM</span>
+    <span class="source-pill active" onclick="toggleSource('Google News Maritime',this)">Google News</span>
+    <span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text3);" id="maritime-count">—</span>
+  </div>
+  <div class="news-card">
+    <div class="news-card-header">
+      <span class="news-card-title" id="maritime-title">Maritime Français — Toutes sources</span>
+      <button class="btn" onclick="fetchMaritime()" style="font-size:11px;padding:3px 10px;">↻</button>
+    </div>
+    <div id="maritime-feed">
+      <div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Chargement...</div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ╔═══════════════════════════════════════════════════════════╗
+// ║  SEUL PARAMÈTRE À MODIFIER                               ║
+// ║  Colle ici l'URL de ton Apps Script déployé              ║
+// ╚═══════════════════════════════════════════════════════════╝
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';
+// Exemple : 'https://script.google.com/macros/s/AKfycb.../exec'
+
+const REFRESH_MS = 5 * 60 * 1000; // refresh toutes les 5 min
+
+// ── Appel Apps Script ──────────────────────────────────────
+async function api(endpoint, params = {}) {
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') return null;
+  const qs  = new URLSearchParams({ endpoint, ...params, t: Date.now() }).toString();
+  const res = await fetch(SCRIPT_URL + '?' + qs);
+  const d   = await res.json();
+  return d.status === 'ok' ? d : null;
+}
+
+// ── Helpers ───────────────────────────────────────────────
+function ago(d) {
+  const m = Math.floor((Date.now() - new Date(d)) / 60000);
+  if (m < 1)    return 'just now';
+  if (m < 60)   return m + 'm ago';
+  if (m < 1440) return Math.floor(m/60) + 'h ago';
+  return Math.floor(m/1440) + 'd ago';
+}
+const cls = v => parseFloat(v) >= 0 ? 'up' : 'down';
+const sgn = v => parseFloat(v) >= 0 ? '+' : '';
+function $set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+
+// ── Clock ─────────────────────────────────────────────────
+setInterval(() => {
+  $set('clock', new Date().toLocaleTimeString('fr-FR', { timeZone:'Europe/Paris', hour12:false }) + ' CET');
+}, 1000);
+
+// ── Tabs ──────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'maritime' && !maritimeState.loaded) fetchMaritime();
+}
+
+// ── Render news ───────────────────────────────────────────
+function renderNews(articles, containerId, firstLead) {
+  const el = document.getElementById(containerId);
+  if (!articles?.length) {
+    el.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">No articles found.</div>';
+    return;
+  }
+  el.innerHTML = articles.map((a, i) => {
+    const url  = a.url || '#';
+    const lead = firstLead && i === 0;
+    const desc = a.description || '';
+    return `<a class="news-row" href="${url}" target="_blank" rel="noopener noreferrer">
+      <div class="news-row-headline${lead ? ' lead' : ''}">${a.title}</div>
+      ${lead && desc ? `<div class="news-row-desc">${desc.substring(0,180)}${desc.length>180?'…':''}</div>` : ''}
+      <div class="news-row-meta">
+        <span>${a.source?.name || '—'}</span>
+        <span class="dot-sep">·</span>
+        <span>${ago(a.publishedAt || Date.now())}</span>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// MACRO NEWS
+// ══════════════════════════════════════════════════════════
+async function fetchMacroNews() {
+  const d = await api('macro_news');
+  if (d?.articles?.length) {
+    renderNews(d.articles, 'macro-news', true);
+    $set('macro-count', d.articles.length + ' articles');
+    document.getElementById('macro-banner').style.display = 'none';
+  } else macroMock();
+}
+
+function macroMock() {
+  const n = Date.now();
+  renderNews([
+    { source:{name:'Financial Times'}, publishedAt:new Date(n-35*60000).toISOString(),  title:'ECB signals pause on rate cuts as services inflation remains sticky at 4.0%', description:"ECB policymakers indicated that further easing is contingent on a clearer disinflation trend in services, which has proved resistant to the tightening cycle.", url:'https://www.ft.com/content/ecb-rates-services-inflation-2025' },
+    { source:{name:'Reuters'},         publishedAt:new Date(n-78*60000).toISOString(),  title:'Federal Reserve holds rates steady; dot plot signals two cuts in 2025 if data cooperate', url:'https://www.reuters.com/markets/us/federal-reserve-holds-rates-steady-2025-03-06/' },
+    { source:{name:'Bloomberg'},       publishedAt:new Date(n-140*60000).toISOString(), title:'Eurozone Q4 GDP revised to +0.1% as German contraction offset by Spanish growth', url:'https://www.bloomberg.com/news/articles/eurozone-gdp-q4-revised-2025' },
+    { source:{name:'WSJ'},             publishedAt:new Date(n-210*60000).toISOString(), title:'US February payrolls beat at +275k; unemployment edges up to 3.9%', url:'https://www.wsj.com/economy/jobs/february-jobs-report-2025' },
+    { source:{name:'The Economist'},   publishedAt:new Date(n-310*60000).toISOString(), title:'Global debt reaches $315 trillion — IMF warns developing markets face refinancing crunch', url:'https://www.economist.com/finance-and-economics/2025/03/global-debt-imf' },
+    { source:{name:'Les Echos'},       publishedAt:new Date(n-420*60000).toISOString(), title:"La BCE maintient ses taux, Lagarde prudente sur la trajectoire d'assouplissement", url:'https://www.lesechos.fr/finance-marches/marches-financiers/bce-taux-lagarde-2025' },
+    { source:{name:"Barron's"},        publishedAt:new Date(n-510*60000).toISOString(), title:"China's deflation deepens for third consecutive month, raising pressure for further stimulus", url:'https://www.barrons.com/articles/china-deflation-stimulus-2025' },
+    { source:{name:'FT'},              publishedAt:new Date(n-640*60000).toISOString(), title:'BoE holds at 4.5% as UK wage growth keeps core CPI elevated', url:'https://www.ft.com/content/boe-holds-rates-uk-cpi-2025' },
+  ], 'macro-news', true);
+  $set('macro-count', '8 articles (demo)');
+}
+
+// ══════════════════════════════════════════════════════════
+// RATES + SWAP
+// ══════════════════════════════════════════════════════════
+async function fetchRates() {
+  const d = await api('rates');
+  if (d) {
+    if (d.ecb)   $set('ecb-rate',  d.ecb   + '%');
+    if (d.fed)   $set('fed-rate',  d.fed   + '%');
+    if (d.us10y) $set('us10y',     d.us10y + '%');
+    if (d.eur10y)$set('eur10y',    d.eur10y+ '%');
+    if (d.swaps) {
+      Object.entries(d.swaps).forEach(([tenor, val]) => {
+        $set('swap-' + tenor.toLowerCase(), val + '%');
+      });
+    }
+    $set('refresh-note', 'Refreshed ' + new Date().toLocaleTimeString('fr-FR'));
+  } else {
+    // Fallback demo
+    $set('ecb-rate','3.00%'); $set('fed-rate','4.50%');
+    $set('us10y','4.31%');    $set('eur10y','2.52%');
+    $set('swap-3y','2.441%'); $set('swap-4y','2.487%');
+    $set('swap-5y','2.531%'); $set('swap-6y','2.568%'); $set('swap-7y','2.601%');
+    $set('refresh-note', 'Demo mode · configure SCRIPT_URL');
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// QUOTES — Indices & Forex
+// ══════════════════════════════════════════════════════════
+const INDICES  = [{s:'^CAC40',l:'CAC 40'},{s:'SPX',l:'S&P 500'},{s:'IWDA',l:'MSCI World'},{s:'^FTSE',l:'FTSE 100'},{s:'^GDAXI',l:'DAX 40'}];
+const FX_PAIRS = [{s:'EUR/USD',l:'EUR/USD'},{s:'GBP/USD',l:'GBP/USD'},{s:'EUR/GBP',l:'EUR/GBP'}];
+
+async function fetchQuotes() {
+  const d = await api('quotes');
+  if (d) {
+    renderIdx(d.indices);
+    renderFx(d.fx);
+  } else {
+    renderIdx({ '^CAC40':{close:'8142.36',percent_change:'0.47'}, 'SPX':{close:'5776.21',percent_change:'-0.22'}, 'IWDA':{close:'3481.09',percent_change:'0.31'}, '^FTSE':{close:'8734.55',percent_change:'0.18'}, '^GDAXI':{close:'23108.40',percent_change:'0.62'} });
+    renderFx({ 'EUR/USD':{close:'1.0842',percent_change:'0.14'}, 'GBP/USD':{close:'1.2701',percent_change:'-0.08'}, 'EUR/GBP':{close:'0.8536',percent_change:'0.11'} });
+  }
+}
+
+function renderIdx(data) {
+  document.getElementById('indices-list').innerHTML = INDICES.map(i => {
+    const q = data?.[i.s];
+    if (!q || q.status === 'error') return `<div class="s-row"><span class="s-label">${i.l}</span><span class="neu s-val">N/A</span></div>`;
+    const p = parseFloat(q.close||q.price||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const c = parseFloat(q.percent_change||0);
+    return `<div class="s-row"><span class="s-label">${i.l}</span><div class="s-right"><div class="s-price">${p}</div><div class="s-chg ${cls(c)}">${sgn(c)}${c.toFixed(2)}%</div></div></div>`;
+  }).join('');
+}
+
+function renderFx(data) {
+  document.getElementById('fx-list').innerHTML = FX_PAIRS.map(f => {
+    const q = data?.[f.s];
+    if (!q || q.status === 'error') return `<div class="s-row"><span class="s-label">${f.l}</span><span class="neu s-val">N/A</span></div>`;
+    const p = parseFloat(q.close||q.price||0).toFixed(4);
+    const c = parseFloat(q.percent_change||0);
+    return `<div class="s-row"><span class="s-label">${f.l}</span><div class="s-right"><div class="s-price">${p}</div><div class="s-chg ${cls(c)}">${sgn(c)}${c.toFixed(3)}%</div></div></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// SECTOR NEWS
+// ══════════════════════════════════════════════════════════
+function selectSector(sector, btn) {
+  document.querySelectorAll('#tab-sector .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  $set('sector-title', btn.textContent + ' — Latest');
+  $set('deal-title',   'Deal Flow — ' + btn.textContent);
+  fetchSectorNews(sector);
+}
+
+async function fetchSectorNews(sector) {
+  document.getElementById('sector-news').innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading...</div>';
+  const d = await api('sector_news', { sector });
+  if (d?.articles?.length) {
+    renderNews(d.articles, 'sector-news', false);
+    $set('sector-count', d.articles.length + ' articles');
+  } else sectorMock(sector);
+  renderDeals(sector);
+}
+
+// Deal flow mock (statique — à enrichir manuellement)
+const DEALS = {
+  'private-debt': [
+    { name:'Ares Capital — Mid-Market Direct Lending', size:'€2.5bn', type:'Senior Secured',    status:'Priced',    url:'https://www.privatedebtinvestor.com/news/ares-capital-direct-lending-2025/' },
+    { name:'Apollo European Private Credit III',       size:'€4.0bn', type:'Infrastructure Debt',status:'Raising',   url:'https://www.bloomberg.com/news/articles/apollo-private-credit-infrastructure-fund' },
+    { name:'Blackstone Credit CLO Series 4',           size:'$3.2bn', type:'CLO / ABS',          status:'Announced', url:'https://www.bloomberg.com/news/articles/blackstone-clo-series-4' },
+    { name:'Tikehau Direct Lending V',                 size:'€2.0bn', type:'Mid-Cap',            status:'Raising',   url:'https://www.tikehaucapital.com' },
+  ],
+  'ma': [
+    { name:'Vivendi / Canal+ Demerger',        size:'€8.0bn', type:'Demerger',           status:'Announced', url:'https://www.ft.com/content/vivendi-canal-plus-demerger-london' },
+    { name:'BNP Paribas / AXA IM Integration', size:'€5.1bn', type:'Financial Services', status:'Announced', url:'https://www.reuters.com/markets/bnp-axa-im-integration-2025/' },
+    { name:'Undisclosed TMT deal',             size:'$1.5bn', type:'Strategic Acq.',      status:'Rumoured',  url:'https://www.bloomberg.com/news/articles/tmt-acquisition-rumoured-2025' },
+  ],
+  'private-equity': [
+    { name:'KKR European Fund VI',    size:'€8.2bn', type:'Large-Cap Buyout', status:'Priced',  url:'https://www.penews.com/articles/kkr-european-fund-vi-close/' },
+    { name:'CVC Capital Partners IX', size:'€26bn',  type:'Large-Cap Buyout', status:'Raising', url:'https://www.ft.com/content/cvc-capital-partners-ix-raising' },
+    { name:'Ardian Buyout Fund IX',   size:'€8.0bn', type:'Mid-Cap Buyout',   status:'Raising', url:'https://www.ardian.com' },
+  ],
+};
+const PILL = { Priced:'p-green','Final Close':'p-green',Announced:'p-blue',Raising:'p-orange',Rumoured:'p-gray' };
+
+function renderDeals(sector) {
+  const deals = DEALS[sector];
+  const el = document.getElementById('deal-tracker');
+  if (!deals) { el.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Pas de données pour ce secteur.</div>'; return; }
+  el.innerHTML = deals.map(d =>
+    `<a class="deal-row" href="${d.url}" target="_blank" rel="noopener noreferrer">
+      <div class="deal-name">${d.name}</div>
+      <div class="deal-meta">
+        <span class="deal-size">${d.size}</span>
+        <span class="deal-type">${d.type}</span>
+        <span class="pill ${PILL[d.status]||'p-gray'}">${d.status}</span>
+      </div>
+    </a>`
+  ).join('') + '<div class="demo-note">Deal flow — mis à jour manuellement</div>';
+}
+
+function sectorMock(sector) {
+  const MOCK = {
+    'private-debt':   [{source:{name:'Private Debt Investor'},publishedAt:new Date(Date.now()-40*60000).toISOString(),title:'Ares Capital closes €2.5bn direct lending facility for European mid-market',url:'https://www.privatedebtinvestor.com/news/ares-capital-direct-lending-2025/'},{source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-120*60000).toISOString(),title:'Apollo raises €4bn for new private credit fund targeting infrastructure debt',url:'https://www.bloomberg.com/news/articles/apollo-private-credit-infrastructure-fund'}],
+    'ma':             [{source:{name:'Financial Times'},publishedAt:new Date(Date.now()-50*60000).toISOString(),title:'Vivendi splits up in €8bn restructuring; Canal+ to list on London Stock Exchange',url:'https://www.ft.com/content/vivendi-canal-plus-demerger-london'},{source:{name:'Reuters'},publishedAt:new Date(Date.now()-160*60000).toISOString(),title:'Global M&A volumes up 18% YTD as PE exits and corporate divestitures accelerate',url:'https://www.reuters.com/markets/deals/global-ma-volumes-2025-q1/'}],
+    'private-equity': [{source:{name:'PE News'},publishedAt:new Date(Date.now()-30*60000).toISOString(),title:'KKR closes €8.2bn European Fund VI — largest pan-European buyout vehicle of the year',url:'https://www.penews.com/articles/kkr-european-fund-vi-close/'},{source:{name:'FT'},publishedAt:new Date(Date.now()-110*60000).toISOString(),title:'Exit environment improves as IPO window reopens for PE-backed companies in H1',url:'https://www.ft.com/content/pe-exits-ipo-window-h1-2025'}],
+    'real-estate':    [{source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-60*60000).toISOString(),title:'REIT valuations recover on lower yield expectations; logistics and residential lead',url:'https://www.bloomberg.com/news/articles/reit-valuations-logistics-2025'}],
+    'credit':         [{source:{name:'Reuters'},publishedAt:new Date(Date.now()-45*60000).toISOString(),title:'High-yield spreads tighten to post-2022 lows as default cycle remains benign',url:'https://www.reuters.com/markets/high-yield-spreads-2025-03-06/'}],
+    'ipo':            [{source:{name:'FT'},publishedAt:new Date(Date.now()-70*60000).toISOString(),title:'European IPO pipeline builds for Q2 as equity markets hold near record levels',url:'https://www.ft.com/content/european-ipo-pipeline-q2-2025'}],
+    'infrastructure': [{source:{name:'Infrastructure Investor'},publishedAt:new Date(Date.now()-55*60000).toISOString(),title:'Brookfield Infrastructure targets $25bn for flagship fund',url:'https://www.infrastructureinvestor.com/brookfield-25bn-flagship-fund/'}],
+    'rates':          [{source:{name:'Bloomberg'},publishedAt:new Date(Date.now()-35*60000).toISOString(),title:'US yield curve steepens as market reprices Fed cutting path to one cut by December',url:'https://www.bloomberg.com/news/articles/yield-curve-steepening-fed-2025'}],
+  };
+  renderNews(MOCK[sector] || [], 'sector-news', false);
+  $set('sector-count', (MOCK[sector]?.length || 0) + ' articles (demo)');
+}
+
+// ══════════════════════════════════════════════════════════
+// MARITIME
+// ══════════════════════════════════════════════════════════
+const maritimeState = { all:[], loaded:false, currentCat:'all', activeSources:new Set(['Le Marin','Mer et Marine','JMM','Google News Maritime']) };
+const CAT_LABELS = { armateurs:'Armateurs', ports:'Ports', construction:'Construction', reglementation:'Réglementation', economie:'Économie' };
+
+async function fetchMaritime() {
+  document.getElementById('maritime-feed').innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Chargement des flux RSS...</div>';
+  const d = await api('maritime', { category:'all' });
+  if (d?.articles?.length) {
+    maritimeState.all    = d.articles;
+    maritimeState.loaded = true;
+    renderMaritime();
+  } else {
+    maritimeMock();
+  }
+}
+
+function filterMaritime(cat, btn) {
+  document.querySelectorAll('#tab-maritime .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  maritimeState.currentCat = cat;
+  renderMaritime();
+}
+
+function toggleSource(name, pill) {
+  if (maritimeState.activeSources.has(name)) {
+    if (maritimeState.activeSources.size === 1) return;
+    maritimeState.activeSources.delete(name);
+    pill.classList.remove('active');
+  } else {
+    maritimeState.activeSources.add(name);
+    pill.classList.add('active');
+  }
+  renderMaritime();
+}
+
+function renderMaritime() {
+  const { all, currentCat, activeSources } = maritimeState;
+  const filtered = all.filter(a => activeSources.has(a.source?.name) && (currentCat === 'all' || a.category === currentCat));
+  $set('maritime-count', filtered.length + ' articles');
+  const el = document.getElementById('maritime-feed');
+  if (!filtered.length) { el.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Aucun article.</div>'; return; }
+  el.innerHTML = filtered.map((a, i) => {
+    const lead = i === 0;
+    const cat  = a.category && a.category !== 'general' ? a.category : '';
+    const tag  = cat ? `<span class="cat-tag cat-${cat}">${CAT_LABELS[cat]||cat}</span>` : '';
+    return `<a class="news-row" href="${a.url||'#'}" target="_blank" rel="noopener noreferrer">
+      <div class="news-row-headline${lead?' lead':''}">${a.title}${tag}</div>
+      ${lead && a.description ? `<div class="news-row-desc">${a.description.substring(0,180)}…</div>` : ''}
+      <div class="news-row-meta"><span>${a.source?.name||'—'}</span><span class="dot-sep">·</span><span>${ago(a.publishedAt||Date.now())}</span></div>
+    </a>`;
+  }).join('');
+}
+
+function maritimeMock() {
+  const n = Date.now();
+  maritimeState.all = [
+    {source:{name:'Le Marin'},            publishedAt:new Date(n-20*60000).toISOString(),  title:"CMA CGM annonce une commande de 12 nouveaux porte-conteneurs GNL au chantier Fincantieri", description:"Le groupe marseillais confirme son engagement dans la décarbonation de sa flotte avec cette commande évaluée à 2,4 milliards d'euros.", url:'https://www.lemarin.fr/transport-maritime/cma-cgm-commande-porte-conteneurs-gnl-fincantieri/', category:'armateurs'},
+    {source:{name:'Mer et Marine'},        publishedAt:new Date(n-55*60000).toISOString(),  title:"Le port de Marseille-Fos enregistre un record de trafic conteneurs au T1 2025", description:"Haropa Port annonce une hausse de 8% des volumes traités sur le premier trimestre.", url:'https://www.meretmarine.com/fr/content/le-port-de-marseille-fos-record-trafic-conteneurs-t1-2025', category:'ports'},
+    {source:{name:'Le Marin'},            publishedAt:new Date(n-90*60000).toISOString(),  title:"Brittany Ferries commande deux nouveaux ferries hybrides pour la ligne Roscoff-Plymouth", url:'https://www.lemarin.fr/transport-maritime/brittany-ferries-commande-ferries-hybrides-roscoff-plymouth/', category:'armateurs'},
+    {source:{name:'Google News Maritime'},publishedAt:new Date(n-130*60000).toISOString(), title:"L'OMI adopte de nouvelles règles sur les émissions de CO₂ : impact sur les armateurs français", url:'https://news.google.com/search?q=OMI+emissions+CO2+armateurs+fran%C3%A7ais&hl=fr', category:'reglementation'},
+    {source:{name:'JMM'},                 publishedAt:new Date(n-180*60000).toISOString(), title:"Louis Dreyfus Armateurs affiche une hausse de 14% de son chiffre d'affaires", url:'https://www.jmm.fr/louis-dreyfus-armateurs-resultats-semestriels-2025/', category:'economie'},
+    {source:{name:'Mer et Marine'},        publishedAt:new Date(n-240*60000).toISOString(), title:"Chantiers de l'Atlantique : livraison du MSC World Europa II repoussée au T4", url:'https://www.meretmarine.com/fr/content/chantiers-atlantique-msc-world-europa-ii-livraison-repoussee', category:'construction'},
+    {source:{name:'Le Marin'},            publishedAt:new Date(n-310*60000).toISOString(), title:"Grève des dockers au Havre : les négociations reprennent sous l'égide du préfet", url:'https://www.lemarin.fr/social/greve-dockers-havre-negociations-prefet/', category:'ports'},
+    {source:{name:'JMM'},                 publishedAt:new Date(n-450*60000).toISOString(), title:"Le port de Dunkerque investit 400M€ dans l'extension de son terminal méthanier", url:'https://www.jmm.fr/port-dunkerque-investissement-terminal-methanier-2025/', category:'ports'},
+    {source:{name:'Mer et Marine'},        publishedAt:new Date(n-520*60000).toISOString(), title:"Bourbon Offshore restructure son activité subsea et cède trois navires à un fonds norvégien", url:'https://www.meretmarine.com/fr/content/bourbon-offshore-restructuration-subsea-cession-navires', category:'armateurs'},
+    {source:{name:'Google News Maritime'},publishedAt:new Date(n-680*60000).toISOString(), title:"Pavillon français : le RIF progresse pour la 3e année consécutive", url:'https://news.google.com/search?q=pavillon+fran%C3%A7ais+RIF+navires&hl=fr', category:'reglementation'},
+  ];
+  maritimeState.loaded = true;
+  renderMaritime();
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+async function init() {
+  await Promise.all([fetchMacroNews(), fetchRates(), fetchQuotes()]);
+  fetchSectorNews('private-debt');
+}
+init();
+setInterval(init, REFRESH_MS);
+</script>
+</body>
+</html>
