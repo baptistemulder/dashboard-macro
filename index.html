@@ -101,12 +101,21 @@
   .news-count { font-size:11px; color:var(--text3); font-family:var(--mono); }
 
   a.news-row {
-    display:block; padding:14px 16px;
+    display:flex; flex-direction:row; gap:14px;
+    padding:14px 16px;
     border-bottom:1px solid var(--border-2);
     text-decoration:none; color:inherit; transition:background .1s;
+    align-items:flex-start;
   }
   a.news-row:last-child { border-bottom:none; }
   a.news-row:hover { background:#fafafa; }
+  .news-row-body { flex:1; min-width:0; }
+  .news-img {
+    flex:0 0 96px; width:96px; height:66px;
+    object-fit:cover; border-radius:4px;
+    background:var(--border); order:2;
+  }
+  a.news-row:not(.has-img) .news-row-body { width:100%; }
   .news-row-headline { font-size:14px; font-weight:600; color:var(--text); line-height:1.4; }
   .news-row-headline.lead { font-size:16px; font-weight:700; line-height:1.35; margin-bottom:5px; }
   .news-row-desc { font-size:12px; font-weight:400; color:var(--text2); line-height:1.55; margin-top:4px; }
@@ -152,10 +161,12 @@
   }
   a.deal-row:last-of-type { border-bottom:none; }
   a.deal-row:hover { background:#fafafa; }
-  .deal-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:5px; line-height:1.4; }
+  .deal-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px; line-height:1.4; }
+  .deal-desc { font-size:11px; color:var(--text2); line-height:1.5; margin-bottom:5px; }
   .deal-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   .deal-size { font-family:var(--mono); font-size:12px; font-weight:500; }
   .deal-type { font-size:11px; color:var(--text3); }
+  .deal-src  { font-size:10px; color:var(--text3); font-family:var(--mono); margin-left:2px; }
   .pill { font-size:10px; font-weight:600; letter-spacing:.4px; padding:2px 8px; border-radius:20px; margin-left:auto; }
   .p-green  { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
   .p-blue   { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
@@ -379,13 +390,34 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrABpsO3o4HzFXLF30J
 
 const REFRESH_MS = 5 * 60 * 1000; // refresh toutes les 5 min
 
-// ── Appel Apps Script ──────────────────────────────────────
-async function api(endpoint, params = {}) {
-  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') return null;
-  const qs  = new URLSearchParams({ endpoint, ...params, t: Date.now() }).toString();
-  const res = await fetch(SCRIPT_URL + '?' + qs);
-  const d   = await res.json();
-  return d.status === 'ok' ? d : null;
+// ── Appel Apps Script via JSONP (contourne CORS) ──────────
+function api(endpoint, params = {}) {
+  return new Promise((resolve) => {
+    if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') { resolve(null); return; }
+
+    const cbName = '_cb_' + endpoint.replace(/[^a-z]/g,'') + '_' + Date.now();
+    const timeout = setTimeout(() => {
+      delete window[cbName];
+      const el = document.getElementById('jsonp_' + cbName);
+      if (el) el.remove();
+      resolve(null);
+    }, 15000);
+
+    window[cbName] = (data) => {
+      clearTimeout(timeout);
+      delete window[cbName];
+      const el = document.getElementById('jsonp_' + cbName);
+      if (el) el.remove();
+      resolve(data?.status === 'ok' ? data : null);
+    };
+
+    const qs  = new URLSearchParams({ endpoint, ...params, callback: cbName, t: Date.now() }).toString();
+    const tag = document.createElement('script');
+    tag.id  = 'jsonp_' + cbName;
+    tag.src = SCRIPT_URL + '?' + qs;
+    tag.onerror = () => { clearTimeout(timeout); resolve(null); };
+    document.head.appendChild(tag);
+  });
 }
 
 // ── Helpers ───────────────────────────────────────────────
@@ -422,16 +454,22 @@ function renderNews(articles, containerId, firstLead) {
     return;
   }
   el.innerHTML = articles.map((a, i) => {
-    const url  = a.url || '#';
-    const lead = firstLead && i === 0;
-    const desc = a.description || '';
-    return `<a class="news-row" href="${url}" target="_blank" rel="noopener noreferrer">
-      <div class="news-row-headline${lead ? ' lead' : ''}">${a.title}</div>
-      ${lead && desc ? `<div class="news-row-desc">${desc.substring(0,180)}${desc.length>180?'…':''}</div>` : ''}
-      <div class="news-row-meta">
-        <span>${a.source?.name || '—'}</span>
-        <span class="dot-sep">·</span>
-        <span>${ago(a.publishedAt || Date.now())}</span>
+    const url   = a.url || '#';
+    const lead  = firstLead && i === 0;
+    const desc  = (a.description || '').replace(/<[^>]*>/g,'').trim();
+    const img   = a.urlToImage || a.image || '';
+    const short = desc.substring(0, lead ? 220 : 140);
+    const more  = desc.length > (lead ? 220 : 140) ? '…' : '';
+    return `<a class="news-row${img ? ' has-img' : ''}" href="${url}" target="_blank" rel="noopener noreferrer">
+      ${img ? `<img class="news-img" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+      <div class="news-row-body">
+        <div class="news-row-headline${lead ? ' lead' : ''}">${a.title}</div>
+        ${desc ? `<div class="news-row-desc">${short}${more}</div>` : ''}
+        <div class="news-row-meta">
+          <span>${a.source?.name || '—'}</span>
+          <span class="dot-sep">·</span>
+          <span>${ago(a.publishedAt || Date.now())}</span>
+        </div>
       </div>
     </a>`;
   }).join('');
@@ -493,7 +531,13 @@ async function fetchRates() {
 // ══════════════════════════════════════════════════════════
 // QUOTES — Indices & Forex
 // ══════════════════════════════════════════════════════════
-const INDICES  = [{s:'^CAC40',l:'CAC 40'},{s:'SPX',l:'S&P 500'},{s:'IWDA',l:'MSCI World'},{s:'^FTSE',l:'FTSE 100'},{s:'^GDAXI',l:'DAX 40'}];
+const INDICES  = [
+  { s:'CAC40',  l:'CAC 40'    },  // Twelve Data free: sans ^
+  { s:'SPX',    l:'S&P 500'   },
+  { s:'IWDA',   l:'MSCI World'},
+  { s:'FTSE',   l:'FTSE 100'  },  // sans ^
+  { s:'GDAXI',  l:'DAX 40'    },  // sans ^
+];
 const FX_PAIRS = [{s:'EUR/USD',l:'EUR/USD'},{s:'GBP/USD',l:'GBP/USD'},{s:'EUR/GBP',l:'EUR/GBP'}];
 
 async function fetchQuotes() {
@@ -502,7 +546,7 @@ async function fetchQuotes() {
     renderIdx(d.indices);
     renderFx(d.fx);
   } else {
-    renderIdx({ '^CAC40':{close:'8142.36',percent_change:'0.47'}, 'SPX':{close:'5776.21',percent_change:'-0.22'}, 'IWDA':{close:'3481.09',percent_change:'0.31'}, '^FTSE':{close:'8734.55',percent_change:'0.18'}, '^GDAXI':{close:'23108.40',percent_change:'0.62'} });
+    renderIdx({ 'CAC40':{close:'8142.36',percent_change:'0.47'}, 'SPX':{close:'5776.21',percent_change:'-0.22'}, 'IWDA':{close:'3481.09',percent_change:'0.31'}, 'FTSE':{close:'8734.55',percent_change:'0.18'}, 'GDAXI':{close:'23108.40',percent_change:'0.62'} });
     renderFx({ 'EUR/USD':{close:'1.0842',percent_change:'0.14'}, 'GBP/USD':{close:'1.2701',percent_change:'-0.08'}, 'EUR/GBP':{close:'0.8536',percent_change:'0.11'} });
   }
 }
@@ -540,50 +584,47 @@ function selectSector(sector, btn) {
 
 async function fetchSectorNews(sector) {
   document.getElementById('sector-news').innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading...</div>';
-  const d = await api('sector_news', { sector });
-  if (d?.articles?.length) {
-    renderNews(d.articles, 'sector-news', false);
-    $set('sector-count', d.articles.length + ' articles');
+  document.getElementById('deal-tracker').innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Loading deals...</div>';
+
+  const [news, deals] = await Promise.all([
+    api('sector_news', { sector }),
+    api('deal_flow',   { sector }),
+  ]);
+
+  if (news?.articles?.length) {
+    renderNews(news.articles, 'sector-news', false);
+    $set('sector-count', news.articles.length + ' articles');
   } else sectorMock(sector);
-  renderDeals(sector);
+
+  if (deals?.deals?.length) renderDealsLive(deals.deals);
+  else renderDealsEmpty();
 }
 
-// Deal flow mock (statique — à enrichir manuellement)
-const DEALS = {
-  'private-debt': [
-    { name:'Ares Capital — Mid-Market Direct Lending', size:'€2.5bn', type:'Senior Secured',    status:'Priced',    url:'https://www.privatedebtinvestor.com/news/ares-capital-direct-lending-2025/' },
-    { name:'Apollo European Private Credit III',       size:'€4.0bn', type:'Infrastructure Debt',status:'Raising',   url:'https://www.bloomberg.com/news/articles/apollo-private-credit-infrastructure-fund' },
-    { name:'Blackstone Credit CLO Series 4',           size:'$3.2bn', type:'CLO / ABS',          status:'Announced', url:'https://www.bloomberg.com/news/articles/blackstone-clo-series-4' },
-    { name:'Tikehau Direct Lending V',                 size:'€2.0bn', type:'Mid-Cap',            status:'Raising',   url:'https://www.tikehaucapital.com' },
-  ],
-  'ma': [
-    { name:'Vivendi / Canal+ Demerger',        size:'€8.0bn', type:'Demerger',           status:'Announced', url:'https://www.ft.com/content/vivendi-canal-plus-demerger-london' },
-    { name:'BNP Paribas / AXA IM Integration', size:'€5.1bn', type:'Financial Services', status:'Announced', url:'https://www.reuters.com/markets/bnp-axa-im-integration-2025/' },
-    { name:'Undisclosed TMT deal',             size:'$1.5bn', type:'Strategic Acq.',      status:'Rumoured',  url:'https://www.bloomberg.com/news/articles/tmt-acquisition-rumoured-2025' },
-  ],
-  'private-equity': [
-    { name:'KKR European Fund VI',    size:'€8.2bn', type:'Large-Cap Buyout', status:'Priced',  url:'https://www.penews.com/articles/kkr-european-fund-vi-close/' },
-    { name:'CVC Capital Partners IX', size:'€26bn',  type:'Large-Cap Buyout', status:'Raising', url:'https://www.ft.com/content/cvc-capital-partners-ix-raising' },
-    { name:'Ardian Buyout Fund IX',   size:'€8.0bn', type:'Mid-Cap Buyout',   status:'Raising', url:'https://www.ardian.com' },
-  ],
-};
+// ── Deal flow live ────────────────────────────────────────
 const PILL = { Priced:'p-green','Final Close':'p-green',Announced:'p-blue',Raising:'p-orange',Rumoured:'p-gray' };
 
-function renderDeals(sector) {
-  const deals = DEALS[sector];
+function renderDealsLive(deals) {
   const el = document.getElementById('deal-tracker');
-  if (!deals) { el.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Pas de données pour ce secteur.</div>'; return; }
-  el.innerHTML = deals.map(d =>
-    `<a class="deal-row" href="${d.url}" target="_blank" rel="noopener noreferrer">
+  el.innerHTML = deals.map(d => {
+    const size   = d.size && d.size !== '—' ? `<span class="deal-size">${d.size}</span>` : '';
+    const type   = d.type ? `<span class="deal-type">${d.type}</span>` : '';
+    const status = d.status ? `<span class="pill ${PILL[d.status]||'p-gray'}">${d.status}</span>` : '';
+    const src    = d.source ? `<span class="deal-src">${d.source}</span>` : '';
+    const desc   = d.description ? `<div class="deal-desc">${d.description.substring(0,120)}…</div>` : '';
+    return `<a class="deal-row" href="${d.url||'#'}" target="_blank" rel="noopener noreferrer">
       <div class="deal-name">${d.name}</div>
-      <div class="deal-meta">
-        <span class="deal-size">${d.size}</span>
-        <span class="deal-type">${d.type}</span>
-        <span class="pill ${PILL[d.status]||'p-gray'}">${d.status}</span>
-      </div>
-    </a>`
-  ).join('') + '<div class="demo-note">Deal flow — mis à jour manuellement</div>';
+      ${desc}
+      <div class="deal-meta">${size}${type}${src}${status}</div>
+    </a>`;
+  }).join('') + `<div class="demo-note">Live · Reuters M&A · PE News · GlobalCapital · Infrastructure Investor</div>`;
 }
+
+function renderDealsEmpty() {
+  document.getElementById('deal-tracker').innerHTML =
+    '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Aucun deal trouvé pour ce secteur.</div>';
+}
+
+
 
 function sectorMock(sector) {
   const MOCK = {
@@ -644,13 +685,20 @@ function renderMaritime() {
   const el = document.getElementById('maritime-feed');
   if (!filtered.length) { el.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:var(--mono);">Aucun article.</div>'; return; }
   el.innerHTML = filtered.map((a, i) => {
-    const lead = i === 0;
-    const cat  = a.category && a.category !== 'general' ? a.category : '';
-    const tag  = cat ? `<span class="cat-tag cat-${cat}">${CAT_LABELS[cat]||cat}</span>` : '';
-    return `<a class="news-row" href="${a.url||'#'}" target="_blank" rel="noopener noreferrer">
-      <div class="news-row-headline${lead?' lead':''}">${a.title}${tag}</div>
-      ${lead && a.description ? `<div class="news-row-desc">${a.description.substring(0,180)}…</div>` : ''}
-      <div class="news-row-meta"><span>${a.source?.name||'—'}</span><span class="dot-sep">·</span><span>${ago(a.publishedAt||Date.now())}</span></div>
+    const lead  = i === 0;
+    const desc  = (a.description || '').replace(/<[^>]*>/g,'').trim();
+    const img   = a.urlToImage || a.image || '';
+    const short = desc.substring(0, lead ? 220 : 140);
+    const more  = desc.length > (lead ? 220 : 140) ? '…' : '';
+    const cat   = a.category && a.category !== 'general' ? a.category : '';
+    const tag   = cat ? `<span class="cat-tag cat-${cat}">${CAT_LABELS[cat]||cat}</span>` : '';
+    return `<a class="news-row${img?' has-img':''}" href="${a.url||'#'}" target="_blank" rel="noopener noreferrer">
+      ${img ? `<img class="news-img" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+      <div class="news-row-body">
+        <div class="news-row-headline${lead?' lead':''}">${a.title}${tag}</div>
+        ${desc ? `<div class="news-row-desc">${short}${more}</div>` : ''}
+        <div class="news-row-meta"><span>${a.source?.name||'—'}</span><span class="dot-sep">·</span><span>${ago(a.publishedAt||Date.now())}</span></div>
+      </div>
     </a>`;
   }).join('');
 }
