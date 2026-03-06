@@ -101,8 +101,8 @@
   .news-count { font-size:11px; color:var(--text3); font-family:var(--mono); }
 
   a.news-row {
-    display:flex; flex-direction:row; gap:18px;
-    padding:20px 20px;
+    display:flex; flex-direction:row; gap:20px;
+    padding:22px 20px;
     border-bottom:1px solid var(--border-2);
     text-decoration:none; color:inherit; transition:background .1s;
     align-items:flex-start;
@@ -111,15 +111,14 @@
   a.news-row:hover { background:#fafafa; }
   .news-row-body { flex:1; min-width:0; }
   .news-img {
-    flex:0 0 140px; width:140px; height:96px;
-    object-fit:cover; border-radius:5px;
-    background:var(--border); order:0;
-    flex-shrink:0;
+    flex:0 0 220px; width:220px; height:148px;
+    object-fit:cover; border-radius:6px;
+    background:var(--border); order:0; flex-shrink:0;
   }
-  .news-row-headline { font-size:15px; font-weight:600; color:var(--text); line-height:1.4; }
-  .news-row-headline.lead { font-size:18px; font-weight:700; line-height:1.35; margin-bottom:6px; }
-  .news-row-desc { font-size:13px; font-weight:400; color:var(--text2); line-height:1.6; margin-top:6px; }
-  .news-row-meta { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text3); margin-top:8px; }
+  .news-row-headline { font-size:16px; font-weight:600; color:var(--text); line-height:1.45; }
+  .news-row-headline.lead { font-size:20px; font-weight:700; line-height:1.35; margin-bottom:8px; }
+  .news-row-desc { font-size:13px; font-weight:400; color:var(--text2); line-height:1.7; margin-top:8px; }
+  .news-row-meta { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text3); margin-top:10px; }
   .dot-sep { color:var(--border-2); }
 
   /* ── SIDEBAR ── */
@@ -427,8 +426,8 @@ function renderNews(articles, containerId, firstLead) {
     const lead  = firstLead && i === 0;
     const desc  = (a.description || '').replace(/<[^>]*>/g,'').trim();
     const img   = a.urlToImage || a.image || '';
-    const short = desc.substring(0, lead ? 300 : 200);
-    const more  = desc.length > (lead ? 300 : 200) ? '…' : '';
+    const short = desc.substring(0, lead ? 400 : 300);
+    const more  = desc.length > (lead ? 400 : 300) ? '…' : '';
     return `<a class="news-row${img ? ' has-img' : ''}" href="${url}" target="_blank" rel="noopener noreferrer">
       ${img ? `<img class="news-img" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
       <div class="news-row-body">
@@ -501,11 +500,11 @@ async function fetchRates() {
 // QUOTES — Indices & Forex
 // ══════════════════════════════════════════════════════════
 const INDICES  = [
-  { s:'CAC40',  l:'CAC 40'    },  // Twelve Data free: sans ^
-  { s:'SPX',    l:'S&P 500'   },
-  { s:'IWDA',   l:'MSCI World'},
-  { s:'FTSE',   l:'FTSE 100'  },  // sans ^
-  { s:'GDAXI',  l:'DAX 40'    },  // sans ^
+  { s:'CAC40',   l:'CAC 40'    },
+  { s:'SPX',     l:'S&P 500'   },
+  { s:'IXIC',    l:'Nasdaq'    },
+  { s:'FTSE',    l:'FTSE 100'  },
+  { s:'DAX',     l:'DAX 40'    },
 ];
 const FX_PAIRS = [{s:'EUR/USD',l:'EUR/USD'},{s:'GBP/USD',l:'GBP/USD'},{s:'EUR/GBP',l:'EUR/GBP'}];
 
@@ -515,7 +514,7 @@ async function fetchQuotes() {
     renderIdx(d.indices);
     renderFx(d.fx);
   } else {
-    renderIdx({ 'CAC40':{close:'8142.36',percent_change:'0.47'}, 'SPX':{close:'5776.21',percent_change:'-0.22'}, 'IWDA':{close:'3481.09',percent_change:'0.31'}, 'FTSE':{close:'8734.55',percent_change:'0.18'}, 'GDAXI':{close:'23108.40',percent_change:'0.62'} });
+    renderIdx({ 'CAC40':{close:'8142.36',percent_change:'0.47'}, 'SPX':{close:'5776.21',percent_change:'-0.22'}, 'IXIC':{close:'18210.44',percent_change:'-0.31'}, 'FTSE':{close:'8734.55',percent_change:'0.18'}, 'DAX':{close:'23108.40',percent_change:'0.62'} });
     renderFx({ 'EUR/USD':{close:'1.0842',percent_change:'0.14'}, 'GBP/USD':{close:'1.2701',percent_change:'-0.08'}, 'EUR/GBP':{close:'0.8536',percent_change:'0.11'} });
   }
 }
